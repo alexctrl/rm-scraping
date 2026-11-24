@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RM Imóveis Slideshow</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #121821;
+    --panel-2: #1a2230;
+    --text: #eef2f6;
+    --muted: #9aa7b6;
+    --line: #263142;
+    --rent: #22b8a7;      /* teal  — Aluguel */
+    --sale: #f0954a;      /* amber — Venda   */
+    --frame: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; overflow: hidden; }
+
+  /* ---------- slideshow ---------- */
+  #show { position: fixed; inset: 0; display: grid; gap: 0; }
+  #show[data-n="1"] { grid-template-columns: 1fr; }
+  #show[data-n="2"] { grid-template-columns: 1fr 1fr; }
+  #show[data-n="3"] { grid-template-columns: 1fr 1fr 1fr; }
+
+  .slot { --accent: var(--sale); position: relative; min-width: 0; min-height: 0;
+    padding: var(--frame); background: var(--accent); container-type: size;
+    transition: background-color .6s ease; }
+  .slot.rent { --accent: var(--rent); }
+  .stage { position: relative; width: 100%; height: 100%; overflow: hidden;
+    background: radial-gradient(ellipse at center, #161d27 0%, #07090c 100%); }
+  .stage img { position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: contain; /* fit by width or height, never crop */
+    opacity: 0; transition: opacity .7s ease; }
+  .stage img.on { opacity: 1; }
+
+  .badge { position: absolute; top: 14px; right: 14px; z-index: 3; display: flex; gap: 8px; align-items: center; }
+  .pill { background: var(--accent); color: #0b0f14; font-weight: 800; letter-spacing: .08em;
+    font-size: clamp(11px, 1.6cqw, 15px); padding: .45em .9em; border-radius: 999px; text-transform: uppercase;
+    box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+  .pill.ghost { background: rgba(10,14,20,.72); color: var(--text); font-weight: 600; letter-spacing: .02em;
+    text-transform: none; backdrop-filter: blur(6px); }
+
+  .info { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    padding: clamp(14px, 3cqw, 34px); padding-top: clamp(40px, 9cqh, 120px);
+    background: linear-gradient(to top, rgba(6,9,13,.94) 0%, rgba(6,9,13,.82) 45%, rgba(6,9,13,0) 100%);
+    max-height: 62%; overflow: hidden; }
+  .info .type { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    font-size: clamp(11px, 1.7cqw, 16px); }
+  .info .price { font-size: clamp(22px, 5.2cqw, 58px); font-weight: 800; line-height: 1.05; margin: .12em 0 .1em; }
+  .info .price small { font-size: .42em; font-weight: 600; color: var(--muted); margin-left: .3em; }
+  .info .loc { font-size: clamp(13px, 2.2cqw, 22px); color: #d9e1ea; margin-bottom: .6em; }
+  .stats { display: flex; flex-wrap: wrap; gap: .5em 1.4em; font-size: clamp(12px, 2cqw, 19px); margin-bottom: .55em; }
+  .stat { display: inline-flex; align-items: baseline; gap: .35em; white-space: nowrap; }
+  .stat b { font-size: 1.15em; }
+  .stat span { color: var(--muted); }
+  .fees { font-size: clamp(11px, 1.7cqw, 16px); color: var(--muted); margin-bottom: .6em; }
+  .fees b { color: var(--text); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: .6em; max-height: 4.6em; overflow: hidden; }
+  .chip { font-size: clamp(10px, 1.45cqw, 13px); padding: .28em .7em; border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent); color: #e7edf3; }
+  .desc { font-size: clamp(11px, 1.6cqw, 15px); color: #c4ceda; line-height: 1.45; white-space: pre-line;
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+  .meta { margin-top: .6em; font-size: clamp(10px, 1.3cqw, 12px); color: var(--muted); }
+  .hide-desc .desc, .hide-feat .chips, .hide-info .info { display: none; }
+
+  /* portrait slots (2-up / 3-up, phones): pin the photo to the top so the
+     details sit mostly in the free space underneath instead of over the photo */
+  @container (max-aspect-ratio: 1/1) {
+    .stage img { object-position: center top; }
+  }
+  /* narrow columns (3-up) — keep text compact */
+  @container (max-width: 520px) {
+    .info { max-height: 70%; }
+    .desc { -webkit-line-clamp: 3; }
+  }
+
+  #progress { position: fixed; left: 0; bottom: 0; height: 3px; width: 0; z-index: 20;
+    background: linear-gradient(90deg, var(--rent), var(--sale)); }
+  #paused { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
+    background: rgba(10,14,20,.8); padding: 6px 14px; border-radius: 999px; font-size: 13px; display: none; }
+  body.is-paused #paused { display: block; }
+
+  /* ---------- menu ---------- */
+  #menuBtn { position: fixed; top: 16px; left: 16px; z-index: 55; width: 46px; height: 46px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.14); background: rgba(10,14,20,.72); color: var(--text); cursor: pointer;
+    display: grid; place-items: center; backdrop-filter: blur(8px); transition: opacity .4s ease; }
+  #menuBtn:hover { background: rgba(30,40,55,.9); }
+  body.idle #menuBtn { opacity: 0; }
+  body.menu-open #menuBtn { background: var(--panel-2); opacity: 1; }
+  body.idle { cursor: none; }
+
+  #menu { position: fixed; top: 0; left: 0; bottom: 0; width: min(360px, 92vw); z-index: 50;
+    background: var(--panel); border-right: 1px solid var(--line); box-shadow: 10px 0 40px rgba(0,0,0,.5);
+    transform: translateX(-105%); transition: transform .3s ease; overflow-y: auto; padding: 22px 22px 30px; }
+  body.menu-open #menu { transform: none; }
+  #scrim { position: fixed; inset: 0; z-index: 45; background: rgba(0,0,0,.45); display: none; }
+  body.menu-open #scrim { display: block; }
+  #menu h2 { margin: 2px 0 4px 56px; font-size: 18px; }
+  #menu .sub { margin: 0 0 18px 56px; color: var(--muted); font-size: 13px; }
+  .field { margin-bottom: 18px; }
+  .field > label:not(.check), .field > .lbl { display: block; font-size: 12px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+  .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg button { border: 0; background: transparent; color: var(--text); padding: 9px 4px; border-radius: 7px;
+    cursor: pointer; font: inherit; font-size: 14px; }
+  .seg button.on { background: #2b3647; font-weight: 700; }
+  .range { display: flex; gap: 12px; align-items: center; }
+  .range input { flex: 1; accent-color: var(--sale); }
+  .range output { min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+  select { width: 100%; background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px; font: inherit; font-size: 14px; }
+  .check { display: flex; align-items: center; gap: 10px; font-size: 14px; margin: 8px 0; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--rent); }
+  .legend { display: flex; gap: 14px; font-size: 13px; margin: 4px 0 18px; }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; }
+  .row { display: flex; gap: 8px; }
+  .btn { flex: 1; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); border-radius: 10px;
+    padding: 10px; font: inherit; font-size: 14px; cursor: pointer; }
+  .btn:hover { background: #222c3c; }
+  .keys { font-size: 12px; color: var(--muted); line-height: 1.8; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+  kbd { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: 11px; color: var(--text); }
+  #count { font-size: 13px; color: var(--muted); margin-top: -8px; margin-bottom: 18px; }
+
+  /* ---------- loader ---------- */
+  #loader { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: var(--bg); padding: 16px; }
+  #loader.gone { display: none; }
+  .drop { max-width: 520px; text-align: center; border: 2px dashed var(--line); border-radius: 18px; padding: 36px 28px; }
+  .drop h1 { font-size: 22px; margin: 0 0 8px; }
+  .drop p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .drop code { background: var(--panel-2); padding: 2px 6px; border-radius: 6px; color: var(--text); }
+  .drop.over { border-color: var(--rent); }
+  .drop label.btn { display: inline-block; margin-top: 10px; flex: none; padding: 10px 18px; }
+  .empty { position: fixed; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 18px; }
+</style>
+</head>
+<body>
+
+<div id="show" data-n="1"></div>
+<div id="progress"></div>
+<div id="paused">⏸ Paused — press Space to resume</div>
+
+<button id="menuBtn" title="Settings (M)" aria-label="Open settings">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+  </svg>
+</button>
+<div id="scrim"></div>
+
+<aside id="menu" aria-label="Presentation settings">
+  <h2>Presentation</h2>
+  <p class="sub">RM Imóveis listings</p>
+  <div id="count"></div>
+
+  <div class="legend"><span><i style="background:var(--rent)"></i>Rent (Aluguel)</span><span><i style="background:var(--sale)"></i>Sale (Venda)</span></div>
+
+  <div class="field">
+    <span class="lbl">Houses at a time</span>
+    <div class="seg" id="perSlide">
+      <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="interval">Time between slides</label>
+    <div class="range"><input type="range" id="interval" min="2" max="30" step="1"><output id="intervalOut"></output></div>
+  </div>
+
+  <div class="field">
+    <label for="imgsPer">Photos per house</label>
+    <select id="imgsPer">
+      <option value="1">1 (main photo only)</option>
+      <option value="3">3</option>
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <option value="0">All photos</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <span class="lbl">Show</span>
+    <div class="seg" id="purpose">
+      <button data-v="all">All</button><button data-v="rent">Rent</button><button data-v="sale">Sale</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="order">Order</label>
+    <select id="order">
+      <option value="site">Newest code first</option>
+      <option value="price-asc">Price: low → high</option>
+      <option value="price-desc">Price: high → low</option>
+      <option value="shuffle">Shuffle</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <span class="lbl">Overlay</span>
+    <label class="check"><input type="checkbox" id="showInfo"> Show details</label>
+    <label class="check"><input type="checkbox" id="showFeat"> Show amenities</label>
+    <label class="check"><input type="checkbox" id="showDesc"> Show description</label>
+  </div>
+
+  <div class="row">
+    <button class="btn" id="playBtn">Pause</button>
+    <button class="btn" id="fsBtn">Fullscreen</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn" id="restartBtn">Restart</button>
+    <label class="btn" style="text-align:center">Load JSON…<input type="file" accept=".json,application/json" id="fileIn2" hidden></label>
+  </div>
+
+  <div class="keys">
+    <kbd>Space</kbd> play / pause &nbsp; <kbd>→</kbd> next photo &nbsp; <kbd>←</kbd> back<br>
+    <kbd>↓</kbd> next house(s) &nbsp; <kbd>↑</kbd> previous house(s)<br>
+    <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> houses at a time &nbsp; <kbd>F</kbd> fullscreen &nbsp; <kbd>M</kbd> menu
+  </div>
+</aside>
+
+<div id="loader">
+  <div class="drop" id="drop">
+    <h1>Load listings</h1>
+    <p id="loaderMsg">Looking for <code>../data/listings.json</code>…</p>
+    <label class="btn">Choose listings.json<input type="file" accept=".json,application/json" id="fileIn" hidden></label>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ------------------------------------------------------------------ config
+  const params = new URLSearchParams(location.search);
+  const DATA_URL = params.get("data") || "../data/listings.json";
+  // local_path in the JSON is relative to the data directory
+  const DATA_BASE = params.get("images") || DATA_URL.replace(/[^/]*$/, "");
+  const STORE_KEY = "rmbh-slideshow-settings";
+  const defaults = { perSlide: 1, interval: 7, imgsPer: 5, purpose: "all", order: "site",
+                     showInfo: true, showFeat: true, showDesc: true };
+  let settings = { ...defaults };
+  try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); } catch (_) {}
+  const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(settings)); } catch (_) {} };
+
+  // ------------------------------------------------------------------ state
+  let all = [], list = [];
+  let group = 0;      // index of first house in current slide
+  let step = 0;       // photo step within the current group
+  let timer = null, playing = true;
+
+  const $ = (s) => document.querySelector(s);
+  const show = $("#show");
+  const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 });
+  const num = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ------------------------------------------------------------------ data
+  function ingest(db) {
+    const rows = Array.isArray(db) ? db : (db.listings || []);
+    all = rows.filter((r) => !r.status || r.status === "active" || r.status === "unlisted")
+              .map((r) => ({ ...r, _imgs: imageList(r) }))
+              .filter((r) => r._imgs.length);
+    $("#loader").classList.add("gone");
+    rebuild(true);
+  }
+
+  function imageList(r) {
+    const imgs = (r.images && r.images.length) ? r.images
+               : (r.image_urls || []).map((u, i) => ({ position: i, url: u }));
+    return imgs.map((im) => ({ local: im.local_path ? DATA_BASE + im.local_path : null, remote: im.url }));
+  }
+
+  function rebuild(resetPos) {
+    let l = all.filter((r) => settings.purpose === "all" || r.purpose === settings.purpose);
+    const price = (r) => (typeof r.price === "number" ? r.price : Infinity);
+    if (settings.order === "price-asc") l.sort((a, b) => price(a) - price(b));
+    else if (settings.order === "price-desc") l.sort((a, b) => (price(b) === Infinity ? -1 : price(b)) - (price(a) === Infinity ? -1 : price(a)));
+    else if (settings.order === "shuffle") {
+      for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
+    } else l.sort((a, b) => b.code - a.code);
+    list = l;
+    if (resetPos) { group = 0; step = 0; }
+    group = list.length ? group % list.length : 0;
+    const rent = list.filter((r) => r.purpose === "rent").length;
+    $("#count").textContent = `${list.length} houses (${rent} rent · ${list.length - rent} sale)`;
+    layout();
+    render();
+    schedule();
+  }
+
+  // ------------------------------------------------------------------ layout & render
+  function perSlide() { return Math.max(1, Math.min(settings.perSlide, list.length || 1)); }
+
+  function layout() {
+    const n = perSlide();
+    show.dataset.n = n;
+    show.className = [settings.showInfo ? "" : "hide-info", settings.showFeat ? "" : "hide-feat", settings.showDesc ? "" : "hide-desc"].join(" ");
+    show.innerHTML = "";
+    if (!list.length) { show.innerHTML = '<div class="empty">No listings match this filter.</div>'; return; }
+    for (let i = 0; i < n; i++) {
+      const slot = document.createElement("section");
+      slot.className = "slot";
+      slot.innerHTML = '<div class="stage"><div class="badge"></div><div class="info"></div></div>';
+      show.appendChild(slot);
+    }
+  }
+
+  function houseAt(i) { return list[(group + i) % list.length]; }
+
+  function stepsForGroup() {
+    let maxImgs = 1;
+    for (let i = 0; i < perSlide(); i++) maxImgs = Math.max(maxImgs, houseAt(i)._imgs.length);
+    return settings.imgsPer > 0 ? Math.min(settings.imgsPer, maxImgs) : maxImgs;
+  }
+
+  function render() {
+    if (!list.length) return;
+    [...show.children].forEach((slot, i) => {
+      const h = houseAt(i);
+      const idx = step % h._imgs.length;
+      slot.classList.toggle("rent", h.purpose === "rent");
+      if (slot.dataset.id !== h.id) {
+        slot.dataset.id = h.id;
+        slot.querySelector(".info").innerHTML = infoHTML(h);
+      }
+      slot.querySelector(".badge").innerHTML =
+        `<span class="pill ghost">${idx + 1} / ${h._imgs.length}</span>` +
+        `<span class="pill">${h.purpose === "rent" ? "Rent · Aluguel" : "Sale · Venda"}</span>`;
+      setImage(slot.querySelector(".stage"), h._imgs[idx]);
+    });
+    preloadNext();
+  }
+
+  function setImage(stage, im) {
+    const want = im.local || im.remote;
+    const cur = stage.querySelector("img.on");
+    if (cur && cur.dataset.src === want) return;
+    const img = new Image();
+    img.alt = "";
+    img.decoding = "async";
+    img.dataset.src = want;
+    img.onload = () => {
+      requestAnimationFrame(() => img.classList.add("on"));
+      stage.querySelectorAll("img").forEach((o) => { if (o !== img) { o.classList.remove("on"); setTimeout(() => o.remove(), 800); } });
+    };
+    img.onerror = () => { if (im.local && img.src !== im.remote) img.src = im.remote; };  // fall back to CDN
+    img.src = want;
+    stage.insertBefore(img, stage.firstChild);
+  }
+
+  function preloadNext() {
+    const s = step + 1 < stepsForGroup() ? step + 1 : 0;
+    const g = step + 1 < stepsForGroup() ? group : (group + perSlide()) % list.length;
+    for (let i = 0; i < perSlide(); i++) {
+      const h = list[(g + i) % list.length];
+      const im = h._imgs[s % h._imgs.length];
+      const p = new Image(); p.src = im.local || im.remote;
+    }
+  }
+
+  function fmtPrice(h) {
+    if (typeof h.price === "number") return brl.format(h.price);
+    return h.price_text || "Price on request";
+  }
+
+  function infoHTML(h) {
+    const loc = [h.neighborhood, [h.city, h.state].filter(Boolean).join("/")].filter(Boolean).join(" · ");
+    const stat = (v, label) => (v === null || v === undefined) ? "" :
+      `<span class="stat"><b>${esc(v)}</b><span>${label}</span></span>`;
+    const area = h.area_m2 ? `${h.area_source === "description" ? "~" : ""}${num.format(h.area_m2)} m²` : null;
+    const stats = [
+      stat(h.bedrooms, h.bedrooms === 1 ? "bedroom" : "bedrooms"),
+      stat(h.suites, h.suites === 1 ? "suite" : "suites"),
+      stat(h.bathrooms, h.bathrooms === 1 ? "bathroom" : "bathrooms"),
+      stat(h.parking_spaces, h.parking_spaces === 1 ? "parking spot" : "parking spots"),
+      area ? `<span class="stat"><b>${esc(area)}</b><span>area</span></span>` : "",
+    ].join("");
+    const fees = [
+      typeof h.condo_fee === "number" ? `Condo fee <b>${brl.format(h.condo_fee)}</b>` : "",
+      typeof h.iptu === "number" ? `IPTU <b>${brl.format(h.iptu)}</b>` : "",
+    ].filter(Boolean).join(" &nbsp;·&nbsp; ");
+    const chips = (h.features || []).map((f) => `<span class="chip">${esc(f)}</span>`).join("");
+    return `
+      <div class="type">${esc(h.property_type || "Imóvel")}</div>
+      <div class="price">${esc(fmtPrice(h))}${h.purpose === "rent" ? "<small>/ month</small>" : ""}</div>
+      ${loc ? `<div class="loc">📍 ${esc(loc)}</div>` : ""}
+      ${stats ? `<div class="stats">${stats}</div>` : ""}
+      ${fees ? `<div class="fees">${fees}</div>` : ""}
+      ${chips ? `<div class="chips">${chips}</div>` : ""}
+      ${h.description ? `<div class="desc">${esc(h.description)}</div>` : ""}
+      <div class="meta">Code ${esc(h.code)} · ${esc(h.title || "")}</div>`;
+  }
+
+  // ------------------------------------------------------------------ timing
+  function schedule() {
+    clearTimeout(timer);
+    const bar = $("#progress");
+    bar.style.transition = "none"; bar.style.width = "0";
+    if (!playing || !list.length) return;
+    void bar.offsetWidth;
+    bar.style.transition = `width ${settings.interval}s linear`;
+    bar.style.width = "100%";
+    timer = setTimeout(() => { next(); }, settings.interval * 1000);
+  }
+
+  function next() {
+    if (!list.length) return;
+    step++;
+    if (step >= stepsForGroup()) { step = 0; group = (group + perSlide()) % list.length; }
+    render(); schedule();
+  }
+  function prev() {
+    if (!list.length) return;
+    if (step > 0) step--;
+    else { group = (group - perSlide() + list.length * 10) % list.length; step = Math.max(0, stepsForGroup() - 1); }
+    render(); schedule();
+  }
+  function jump(dir) {
+    if (!list.length) return;
+    step = 0; group = (group + dir * perSlide() + list.length * 10) % list.length;
+    render(); schedule();
+  }
+  function togglePlay(force) {
+    playing = typeof force === "boolean" ? force : !playing;
+    document.body.classList.toggle("is-paused", !playing);
+    $("#playBtn").textContent = playing ? "Pause" : "Play";
+    schedule();
+  }
+
+  // ------------------------------------------------------------------ menu wiring
+  function syncControls() {
+    document.querySelectorAll("#perSlide button").forEach((b) => b.classList.toggle("on", +b.dataset.v === settings.perSlide));
+    document.querySelectorAll("#purpose button").forEach((b) => b.classList.toggle("on", b.dataset.v === settings.purpose));
+    $("#interval").value = settings.interval;
+    $("#intervalOut").textContent = settings.interval + " s";
+    $("#imgsPer").value = String(settings.imgsPer);
+    $("#order").value = settings.order;
+    $("#showInfo").checked = settings.showInfo;
+    $("#showFeat").checked = settings.showFeat;
+    $("#showDesc").checked = settings.showDesc;
+  }
+  function set(patch, rebuildList) {
+    Object.assign(settings, patch); save(); syncControls();
+    if (rebuildList) rebuild(true); else { layout(); render(); schedule(); }
+  }
+
+  $("#perSlide").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ perSlide: +v }); });
+  $("#purpose").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ purpose: v }, true); });
+  $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedule(); });
+  $("#imgsPer").addEventListener("change", (e) => { set({ imgsPer: +e.target.value }); });
+  $("#order").addEventListener("change", (e) => set({ order: e.target.value }, true));
+  $("#showInfo").addEventListener("change", (e) => set({ showInfo: e.target.checked }));
+  $("#showFeat").addEventListener("change", (e) => set({ showFeat: e.target.checked }));
+  $("#showDesc").addEventListener("change", (e) => set({ showDesc: e.target.checked }));
+  $("#playBtn").addEventListener("click", () => togglePlay());
+  $("#restartBtn").addEventListener("click", () => rebuild(true));
+  $("#fsBtn").addEventListener("click", toggleFs);
+
+  const openMenu = (open) => document.body.classList.toggle("menu-open", open ?? !document.body.classList.contains("menu-open"));
+  $("#menuBtn").addEventListener("click", () => openMenu());
+  $("#scrim").addEventListener("click", () => openMenu(false));
+
+  function toggleFs() {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, select") && e.key !== "Escape") return;
+    switch (e.key) {
+      case " ": e.preventDefault(); togglePlay(); break;
+      case "ArrowRight": next(); break;
+      case "ArrowLeft": prev(); break;
+      case "ArrowDown": case "PageDown": e.preventDefault(); jump(1); break;
+      case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
+      case "1": case "2": case "3": set({ perSlide: +e.key }); break;
+      case "f": case "F": toggleFs(); break;
+      case "m": case "M": openMenu(); break;
+      case "Escape": openMenu(false); break;
+    }
+  });
+
+  // hide the menu button & cursor when the mouse is idle
+  let idleT;
+  const wake = () => { document.body.classList.remove("idle"); clearTimeout(idleT);
+    idleT = setTimeout(() => { if (!document.body.classList.contains("menu-open")) document.body.classList.add("idle"); }, 3000); };
+  ["mousemove", "mousedown", "touchstart", "keydown"].forEach((ev) => document.addEventListener(ev, wake, { passive: true }));
+  wake();
+
+  // ------------------------------------------------------------------ loading
+  function readFile(file) {
+    const fr = new FileReader();
+    fr.onload = () => { try { ingest(JSON.parse(fr.result)); openMenu(false); } catch (err) { $("#loaderMsg").textContent = "Invalid JSON: " + err.message; } };
+    fr.readAsText(file);
+  }
+  ["#fileIn", "#fileIn2"].forEach((s) => $(s).addEventListener("change", (e) => e.target.files[0] && readFile(e.target.files[0])));
+  const drop = $("#drop");
+  document.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+  document.addEventListener("dragleave", () => drop.classList.remove("over"));
+  document.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+
+  syncControls();
+  fetch(DATA_URL, { cache: "no-store" })
+    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(ingest)
+    .catch(() => {
+      $("#loaderMsg").innerHTML = `Couldn't load <code>${esc(DATA_URL)}</code> automatically` +
+        (location.protocol === "file:" ? " (browsers block this when the page is opened as a file)." : ".") +
+        `<br>Run <code>python -m http.server</code> in the project folder and open <code>/viewer/</code>, or pick the file below.`;
+    });
+})();
+</script>
+</body>
+</html>

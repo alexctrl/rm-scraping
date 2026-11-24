@@ -98,6 +98,35 @@ Fields the site leaves empty (`--` on the cards) are stored as `null`. Prices ar
 exactly as the site shows them. Some sale prices appear to be entered in thousands, so
 `price_text` is kept next to `price`. See [`docs/SITE_STUDY.md`](docs/SITE_STUDY.md).
 
+## Slideshow viewer (`viewer/index.html`)
+
+A single-file HTML/JS app that presents the listings from `data/listings.json` as a full-screen
+slideshow.
+
+```bash
+python -m http.server 8000        # run from the project root
+# open http://localhost:8000/viewer/
+```
+
+If you open the page directly as a file, the browser blocks the automatic JSON load. In that
+case, pick or drag `data/listings.json` onto the page. Photos load from `data/images/` and fall
+back to the CDN URL if a local file is missing.
+
+- **Menu (top-left button, or `M`)**: time between slides, houses at a time (1, 2 or 3),
+  photos per house (1, 3, 5, 10 or all), filter (all, rent or sale), order (newest, price, shuffle),
+  which overlay parts to show, play/pause, fullscreen and restart. Settings are remembered in the browser.
+- **Layout**: 1 house fills the screen, 2 split it into left and right halves, 3 into three equal
+  columns. Photos are fitted to the slot's width or height and never cropped.
+- **Colours**: each house has a coloured frame and badge, teal for **rent (Aluguel)** and orange
+  for **sale (Venda)**.
+- **Details shown**: type, price (rent shown as "/ month"), neighbourhood and city, bedrooms,
+  suites, bathrooms, parking, area ("~" means taken from the description), condo fee, IPTU,
+  amenities, description, code, original title and photo counter. Fields the site doesn't
+  provide are left out.
+- **Keys**: `Space` play/pause, `←`/`→` previous/next photo, `↑`/`↓` previous/next house(s),
+  `1` `2` `3` houses at a time, `F` fullscreen.
+- Optional URL parameters: `?data=path/to/listings.json&images=path/to/data/`.
+
 ## Python API
 
 ```python
