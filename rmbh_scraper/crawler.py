@@ -103,8 +103,9 @@ def build_record(card: dict[str, Any] | None, detail: dict[str, Any], type_ids: 
         "condo_fee": detail.get("condo_fee"),
         "iptu": detail.get("iptu"),
         "area_m2": detail.get("area_m2"),
+        "area_source": detail.get("area_source"),
         "bedrooms": card.get("bedrooms") if card.get("bedrooms") is not None else detail.get("bedrooms_from_title"),
-        "suites": card.get("suites"),
+        "suites": card.get("suites") if card.get("suites") is not None else detail.get("suites_from_title"),
         "bathrooms": card.get("bathrooms"),
         "parking_spaces": (
             card.get("parking_spaces") if card.get("parking_spaces") is not None else detail.get("parking_from_title")

@@ -177,15 +177,36 @@ def parse_listing_page(html: str) -> dict[str, Any]:
     }
 
 
+def _parse_area(text: str) -> float | None:
+    m = _AREA.search(text)
+    if not m:
+        return None
+    raw = m.group(1)
+    if re.fullmatch(r"\d{1,3}(?:\.\d{3})+(?:,\d+)?", raw):  # 1.200,50 / 1.200
+        raw = raw.replace(".", "").replace(",", ".")
+    else:
+        raw = raw.replace(",", ".")
+    try:
+        val = float(raw)
+    except ValueError:
+        return None
+    return val if val > 0 else None
+
+
 # --------------------------------------------------------------------------- #
 # Detail page
 # --------------------------------------------------------------------------- #
 _CODE = re.compile(r"Código:\s*(\d+)")
-_AREA = re.compile(r"(\d+(?:[.,]\d+)?)\s*m²")
+_AREA = re.compile(r"(\d{1,3}(?:\.\d{3})*(?:,\d+)?|\d+(?:[.,]\d+)?)\s*(?:m²|m2\b|metros quadrados)", re.I)
+_SUITES = re.compile(r"(\d+)\s*su[íi]tes?", re.I)
 _ROOMS = re.compile(r"(\d+)\s*quartos?", re.I)
 _SPOTS = re.compile(r"(\d+)\s*vagas?", re.I)
 # "Apartamento residencial de 196 m² à venda no Funcionários, em Belo Horizonte no valor de ..."
-_TITLE_A = re.compile(r"\b(?:à venda|para (?:aluguel|locação|venda)|para alugar)\s+n[oa]s?\s+(?P<nb>.+?),\s*em\s+(?P<city>.+?)\s+no valor", re.I)
+# "... à venda em Lourdes, Belo Horizonte no valor de ..."
+_TITLE_A = re.compile(
+    r"\b(?:à venda|para (?:aluguel|locação|venda)|para alugar)\s+(?:n[oa]s?|em)\s+(?P<nb>[^,]+?),\s*(?:em\s+)?(?P<city>[^,]+?)\s+no valor",
+    re.I,
+)
 # "Casa Comercial para aluguel, 4 vagas, Lourdes - Belo Horizonte/MG no valor de R$ 20.000,00"
 _TITLE_B = re.compile(r",\s*(?P<nb>[^,]+?)\s+-\s+(?P<city>[^/,]+?)/(?P<state>[A-Z]{2})\s+no valor", re.I)
 
@@ -255,12 +276,14 @@ def parse_detail(html: str) -> dict[str, Any] | None:
             description = re.sub(r"\n{3,}", "\n\n", text).strip() or None
 
     # --- title-derived attributes -----------------------------------------
-    area = bedrooms = parking = None
+    area = bedrooms = parking = suites = None
+    area_source = None
     neighborhood = city = state = None
     if title:
-        am = _AREA.search(title)
-        if am:
-            area = float(am.group(1).replace(".", "").replace(",", "."))
+        area = _parse_area(title)
+        area_source = "title" if area is not None else None
+        sm_ = _SUITES.search(title)
+        suites = int(sm_.group(1)) if sm_ else None
         rm = _ROOMS.search(title)
         bedrooms = int(rm.group(1)) if rm else None
         sm = _SPOTS.search(title)
@@ -276,6 +299,11 @@ def parse_detail(html: str) -> dict[str, Any] | None:
             pm = re.search(r"no valor de\s+(.+)$", title)
             if pm:
                 price_text = clean(pm.group(1))
+
+    if area is None and description:
+        # Free-text fallback: first "NNN m²" in the description (may be land/total area).
+        area = _parse_area(description)
+        area_source = "description" if area is not None else None
 
     # Inquiry form pre-fills a summary, e.g.
     # "Olá, tenho interesse neste imóvel: Apartamento, Venda, 4 quartos, R$ 2.450,00, Funcionários."
@@ -294,7 +322,9 @@ def parse_detail(html: str) -> dict[str, Any] | None:
         "iptu_text": iptu_text,
         "iptu": parse_money(iptu_text),
         "area_m2": area,
+        "area_source": area_source,
         "bedrooms_from_title": bedrooms,
+        "suites_from_title": suites,
         "parking_from_title": parking,
         "neighborhood_from_title": neighborhood,
         "city": city,

@@ -1,0 +1,259 @@
+{
+  "id": "3240-sale",
+  "code": 3240,
+  "purpose": "sale",
+  "purpose_id": 2,
+  "purpose_label": "Venda",
+  "url": "https://www.rmbhimoveis.com.br/detalhes-imovel.php?imovel=3240&finalidade=2",
+  "title": "Apartamento residencial de 196 m² à venda no Funcionários, em Belo Horizonte no valor de R$ 2.450,00",
+  "property_type": "Apartamento",
+  "property_type_ids": [
+    2
+  ],
+  "price": 2450.0,
+  "price_text": "R$ 2.450,00",
+  "condo_fee": 1800.0,
+  "iptu": 1035.0,
+  "area_m2": 196.0,
+  "area_source": "title",
+  "bedrooms": 4,
+  "suites": 2,
+  "bathrooms": 3,
+  "parking_spaces": 2,
+  "neighborhood": "Funcionários",
+  "city": "Belo Horizonte",
+  "state": "MG",
+  "features": [
+    "Academia",
+    "Armário Cozinha",
+    "Piscina",
+    "Sala de massagem",
+    "Armário Quarto",
+    "Quadra Esportiva",
+    "1 Varanda"
+  ],
+  "description": "LOCALIZAÇÃO; bairro Funcionários, situado na região Centro-Sul de Belo Horizonte, uma das áreas mais tradicionais e valorizadas da capital. Conta com ruas arborizadas, comércio variado, restaurantes, bares, cafés, bancos, escolas e serviços de saúde. PRÉDIO com portaria virtual, hall social decorado e elevador codificado, com um apartamento por andar. A área comum inclui academia, piscina, quadra esportiva, sauna, salão de festas, espaço gourmet e salão de jogos.\nAPARTAMENTO possui 196 m². A sala para dois ambientes com piso em tábua corrida e acesso à varanda. A unidade conta com lavabo, quatro quartos com armários, sendo duas suítes, e banheiro social. A cozinha é planejada, com despensa, e há área de serviço e dependência completa de serviço. O imóvel dispõe de duas vagas de garagem e box de despejo.",
+  "thumbnail": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/xwdjx-whatsapp-image-2026-11-20-at-001342-2-1795440371.jpeg?1795442373",
+  "image_urls": [
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/xwdjx-whatsapp-image-2026-11-20-at-001342-2-1795440371.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/jfdam-whatsapp-image-2026-11-20-at-001342-1-1795440371.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/r4216-whatsapp-image-2026-11-20-at-001345-1795440371.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/znuncj-whatsapp-image-2026-11-20-at-001341-1795440371.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/7sqyej-whatsapp-image-2026-11-20-at-001342-1795440371.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/lw2o9-whatsapp-image-2026-11-20-at-001336-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/m091i-whatsapp-image-2026-11-20-at-001333-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/nkzm2j-whatsapp-image-2026-11-20-at-001333-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/r41fb-whatsapp-image-2026-11-20-at-001333-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/pckmj-whatsapp-image-2026-11-20-at-001325-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/cb2fw-whatsapp-image-2026-11-20-at-001331-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/v301z-whatsapp-image-2026-11-20-at-001500-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/98kqe-whatsapp-image-2026-11-20-at-001332-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/mxnz9-whatsapp-image-2026-11-20-at-001325-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/s1l4t-whatsapp-image-2026-11-20-at-001451-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/4ajsd-whatsapp-image-2026-11-20-at-001451-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/bc8bh-whatsapp-image-2026-11-20-at-001448-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/3r624g-whatsapp-image-2026-11-20-at-001447-2-1795440881.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/hh044-whatsapp-image-2026-11-20-at-001449-3-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/myib7-whatsapp-image-2026-11-20-at-001448-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/meice-whatsapp-image-2026-11-20-at-001341-3-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/ukg1c-whatsapp-image-2026-11-20-at-001533-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/yz73c-whatsapp-image-2026-11-20-at-001530-2-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/9rrw8-whatsapp-image-2026-11-20-at-001532-3-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/c8m0g-whatsapp-image-2026-11-20-at-001531-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/vv9li-whatsapp-image-2026-11-20-at-001439-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/yenbq-whatsapp-image-2026-11-20-at-001438-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/dw0uy-whatsapp-image-2026-11-20-at-001442-1-1795440372.jpeg?1795442373",
+    "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/oae1q-whatsapp-image-2026-11-20-at-001346-1795440372.jpeg?1795442373"
+  ],
+  "images": [
+    {
+      "position": 0,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/xwdjx-whatsapp-image-2026-11-20-at-001342-2-1795440371.jpeg?1795442373",
+      "local_path": "images/3240-sale/000_xwdjx-whatsapp-image-2026-11-20-at-001342-2-1795440371.jpeg"
+    },
+    {
+      "position": 1,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/jfdam-whatsapp-image-2026-11-20-at-001342-1-1795440371.jpeg?1795442373",
+      "local_path": "images/3240-sale/001_jfdam-whatsapp-image-2026-11-20-at-001342-1-1795440371.jpeg"
+    },
+    {
+      "position": 2,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/r4216-whatsapp-image-2026-11-20-at-001345-1795440371.jpeg?1795442373",
+      "local_path": "images/3240-sale/002_r4216-whatsapp-image-2026-11-20-at-001345-1795440371.jpeg"
+    },
+    {
+      "position": 3,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/znuncj-whatsapp-image-2026-11-20-at-001341-1795440371.jpeg?1795442373",
+      "local_path": "images/3240-sale/003_znuncj-whatsapp-image-2026-11-20-at-001341-1795440371.jpeg"
+    },
+    {
+      "position": 4,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/7sqyej-whatsapp-image-2026-11-20-at-001342-1795440371.jpeg?1795442373",
+      "local_path": "images/3240-sale/004_7sqyej-whatsapp-image-2026-11-20-at-001342-1795440371.jpeg"
+    },
+    {
+      "position": 5,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/lw2o9-whatsapp-image-2026-11-20-at-001336-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/005_lw2o9-whatsapp-image-2026-11-20-at-001336-2-1795440372.jpeg"
+    },
+    {
+      "position": 6,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/m091i-whatsapp-image-2026-11-20-at-001333-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/006_m091i-whatsapp-image-2026-11-20-at-001333-1-1795440372.jpeg"
+    },
+    {
+      "position": 7,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/nkzm2j-whatsapp-image-2026-11-20-at-001333-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/007_nkzm2j-whatsapp-image-2026-11-20-at-001333-2-1795440372.jpeg"
+    },
+    {
+      "position": 8,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/r41fb-whatsapp-image-2026-11-20-at-001333-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/008_r41fb-whatsapp-image-2026-11-20-at-001333-1795440372.jpeg"
+    },
+    {
+      "position": 9,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/pckmj-whatsapp-image-2026-11-20-at-001325-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/009_pckmj-whatsapp-image-2026-11-20-at-001325-2-1795440372.jpeg"
+    },
+    {
+      "position": 10,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/cb2fw-whatsapp-image-2026-11-20-at-001331-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/010_cb2fw-whatsapp-image-2026-11-20-at-001331-1795440372.jpeg"
+    },
+    {
+      "position": 11,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/v301z-whatsapp-image-2026-11-20-at-001500-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/011_v301z-whatsapp-image-2026-11-20-at-001500-2-1795440372.jpeg"
+    },
+    {
+      "position": 12,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/98kqe-whatsapp-image-2026-11-20-at-001332-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/012_98kqe-whatsapp-image-2026-11-20-at-001332-1795440372.jpeg"
+    },
+    {
+      "position": 13,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/mxnz9-whatsapp-image-2026-11-20-at-001325-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/013_mxnz9-whatsapp-image-2026-11-20-at-001325-1-1795440372.jpeg"
+    },
+    {
+      "position": 14,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/s1l4t-whatsapp-image-2026-11-20-at-001451-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/014_s1l4t-whatsapp-image-2026-11-20-at-001451-2-1795440372.jpeg"
+    },
+    {
+      "position": 15,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/4ajsd-whatsapp-image-2026-11-20-at-001451-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/015_4ajsd-whatsapp-image-2026-11-20-at-001451-1-1795440372.jpeg"
+    },
+    {
+      "position": 16,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/bc8bh-whatsapp-image-2026-11-20-at-001448-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/016_bc8bh-whatsapp-image-2026-11-20-at-001448-1795440372.jpeg"
+    },
+    {
+      "position": 17,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/3r624g-whatsapp-image-2026-11-20-at-001447-2-1795440881.jpeg?1795442373",
+      "local_path": "images/3240-sale/017_3r624g-whatsapp-image-2026-11-20-at-001447-2-1795440881.jpeg"
+    },
+    {
+      "position": 18,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/hh044-whatsapp-image-2026-11-20-at-001449-3-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/018_hh044-whatsapp-image-2026-11-20-at-001449-3-1795440372.jpeg"
+    },
+    {
+      "position": 19,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/myib7-whatsapp-image-2026-11-20-at-001448-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/019_myib7-whatsapp-image-2026-11-20-at-001448-1-1795440372.jpeg"
+    },
+    {
+      "position": 20,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/meice-whatsapp-image-2026-11-20-at-001341-3-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/020_meice-whatsapp-image-2026-11-20-at-001341-3-1795440372.jpeg"
+    },
+    {
+      "position": 21,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/ukg1c-whatsapp-image-2026-11-20-at-001533-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/021_ukg1c-whatsapp-image-2026-11-20-at-001533-1795440372.jpeg"
+    },
+    {
+      "position": 22,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/yz73c-whatsapp-image-2026-11-20-at-001530-2-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/022_yz73c-whatsapp-image-2026-11-20-at-001530-2-1795440372.jpeg"
+    },
+    {
+      "position": 23,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/9rrw8-whatsapp-image-2026-11-20-at-001532-3-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/023_9rrw8-whatsapp-image-2026-11-20-at-001532-3-1795440372.jpeg"
+    },
+    {
+      "position": 24,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/c8m0g-whatsapp-image-2026-11-20-at-001531-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/024_c8m0g-whatsapp-image-2026-11-20-at-001531-1-1795440372.jpeg"
+    },
+    {
+      "position": 25,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/vv9li-whatsapp-image-2026-11-20-at-001439-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/025_vv9li-whatsapp-image-2026-11-20-at-001439-1-1795440372.jpeg"
+    },
+    {
+      "position": 26,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/yenbq-whatsapp-image-2026-11-20-at-001438-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/026_yenbq-whatsapp-image-2026-11-20-at-001438-1-1795440372.jpeg"
+    },
+    {
+      "position": 27,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/dw0uy-whatsapp-image-2026-11-20-at-001442-1-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/027_dw0uy-whatsapp-image-2026-11-20-at-001442-1-1795440372.jpeg"
+    },
+    {
+      "position": 28,
+      "url": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/oae1q-whatsapp-image-2026-11-20-at-001346-1795440372.jpeg?1795442373",
+      "local_path": "images/3240-sale/028_oae1q-whatsapp-image-2026-11-20-at-001346-1795440372.jpeg"
+    }
+  ],
+  "contact_summary": "Olá, tenho interesse neste imóvel: Apartamento, Venda, 4 quartos, R$ 2.450,00, Funcionários. Aguardo breve o contato. Obrigado.",
+  "raw": {
+    "card": {
+      "code": 3240,
+      "purpose_id": 2,
+      "url": "https://www.rmbhimoveis.com.br/detalhes-imovel.php?imovel=3240&finalidade=2",
+      "thumbnail": "https://cdn.imoview.com.br/rmimoveis/Imoveis/3240/xwdjx-whatsapp-image-2026-11-20-at-001342-2-1795440371.jpeg?1795442373",
+      "property_type": "Apartamento",
+      "price_text": "R$2.450,00",
+      "price": 2450.0,
+      "suites": 2,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "parking_spaces": 2,
+      "neighborhood": "Funcionários"
+    },
+    "info_items": [
+      "Academia",
+      "Armário Cozinha",
+      "Piscina",
+      "Sala de massagem",
+      "Armário Quarto",
+      "Quadra Esportiva",
+      "1 Varanda",
+      "Condomínio R$: 1800,00",
+      "IPTU: R$ 1035,00",
+      "R$ 2.450,00"
+    ],
+    "condo_fee_text": "Condomínio R$: 1800,00",
+    "iptu_text": "IPTU: R$ 1035,00"
+  },
+  "content_hash": "69101cd2fb9491ad6fd9dc4bae34a7e751e828b4",
+  "status": "active",
+  "last_seen": "2026-11-24T02:38:50+00:00",
+  "removed_at": null,
+  "first_seen": "2026-11-24T02:28:23+00:00",
+  "price_history": [
+    {
+      "date": "2026-11-24T02:28:23+00:00",
+      "price": 2450.0,
+      "price_text": "R$ 2.450,00"
+    }
+  ],
+  "updated_at": "2026-11-24T02:28:23+00:00"
+}

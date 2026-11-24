@@ -35,10 +35,12 @@ with plain `requests` to confirm that no browser, JavaScript or cookies beyond
 
 - An **empty `TIPOIMO` returns 0 results.** The browser always sends the first type in the
   dropdown.
-- `TIPOIMO=0` works as an "any type" search, but it returns **fewer** listings than
-  the sum of the per-type searches (on 2026-11-24: 199 vs 225 for sale and 29 vs 32 for rent). A
-  complete crawl therefore runs type 0 **and** every type, then removes duplicates by
-  `(code, finalidade)`.
+- `TIPOIMO=0` works as an "any type" search. On 2026-11-24 it returned all 228 unique
+  listings (29 for rent, 199 for sale). The per-type searches add up to more (257) because
+  one listing can be filed under several types (for example Casa + Casa Comercial, or
+  Apartamento + Cobertura). The crawler runs type 0 **and** every type, removes duplicates by
+  `(code, finalidade)` and records every type ID a listing matched in `property_type_ids`.
+  If type 0 ever stops returning everything, the crawl is still complete.
 - Type IDs that are not in the dropdown always return 0 (I probed IDs 0–30).
 - Searches depend on session state, so each search needs its own cookie jar, which also
   makes the searches safe to run in parallel. Detail pages need no session.
@@ -65,6 +67,10 @@ with plain `requests` to confirm that no browser, JavaScript or cookies beyond
   - `Apartamento residencial de 196 m² à venda no Funcionários, em Belo Horizonte no valor de R$ …`
   - `Casa Comercial para aluguel, 4 vagas, Lourdes - Belo Horizonte/MG no valor de R$ …`
 - Gallery `.imagem_galeria_detalhes a[href]`: the full-size photo URLs in display order
+- The title is usually the generated sentence above, but brokers can overwrite it with free
+  text (for example "2 lotes com área total de 648m² ..."). The area is rarely in the title,
+  so when it is missing the parser takes the first "N m²" from the description and sets
+  `area_source = "description"`. That value may be the land or total area.
 - `.item_info` chips: amenities ("Piscina", "1 Varanda" …), `Condomínio R$: X`,
   `IPTU: R$ X`, and the price
 - Description: the free-text block under "Descrição do imóvel" (a legal disclaimer

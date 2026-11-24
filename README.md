@@ -56,7 +56,7 @@ Use `--force` to accept the run anyway.
     "schema_version": 1,
     "source": "https://www.rmbhimoveis.com.br/",
     "first_run_at": "...", "last_run_at": "...",
-    "counts": {"active": 250, "active_rent": 32, "active_sale": 218, "removed": 0, ...},
+    "counts": {"active": 228, "active_rent": 29, "active_sale": 199, "removed": 0, ...},
     "property_types": {"rent": [{"id": 2, "name": "Apartamento"}, ...], "sale": [...]}
   },
   "listings": [
@@ -69,7 +69,7 @@ Use `--force` to accept the run anyway.
       "property_type": "Apartamento", "property_type_ids": [2],
       "price": 2450.0, "price_text": "R$ 2.450,00",
       "condo_fee": 1800.0, "iptu": 1035.0,
-      "area_m2": 196.0,
+      "area_m2": 196.0, "area_source": "title",      // "title" | "description" | null
       "bedrooms": 4, "suites": 2, "bathrooms": 3, "parking_spaces": 2,
       "neighborhood": "Funcionários", "city": "Belo Horizonte", "state": "MG",
       "features": ["Academia", "Piscina", "1 Varanda", ...],
@@ -87,6 +87,12 @@ Use `--force` to accept the run anyway.
   ]
 }
 ```
+
+As of 2026-11-24 the site has **228 active listings** (29 for rent and 199 for sale) with about
+4,900 photos (about 520 MB). The first run with `--images` takes about 10 minutes. Later
+daily runs take about 2 minutes and download only new photos.
+
+A real record is in [`docs/sample_listing.json`](docs/sample_listing.json).
 
 Fields the site leaves empty (`--` on the cards) are stored as `null`. Prices are stored
 exactly as the site shows them. Some sale prices appear to be entered in thousands, so
