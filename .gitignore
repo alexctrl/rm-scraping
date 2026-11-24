@@ -4,3 +4,5 @@ __pycache__/
 .pytest_cache/
 data/
 study_output/
+rmbh_scraper/_version.py
+dist/

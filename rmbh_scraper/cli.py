@@ -15,6 +15,7 @@ import json
 import logging
 import sys
 
+from . import __version__
 from .client import RENT, SALE, RMBHClient
 from .crawler import Crawler
 
@@ -72,6 +73,7 @@ def _summary(report: dict) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="rmbh_scraper", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("-v", "--verbose", action="store_true", help="mostra mensagens detalhadas")
+    ap.add_argument("--version", action="version", version=f"%(prog)s {__version__}", help="mostra a versão e sai")
     ap.add_argument("--delay", type=float, default=0.25, help="intervalo mínimo em segundos entre requisições (padrão 0,25)")
     sub = ap.add_subparsers(dest="cmd", required=True, title="comandos", metavar="COMANDO")
 

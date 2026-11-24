@@ -1,0 +1,66 @@
+# Automatic versioning: every push to the default branch runs the tests and,
+# if they pass, creates the next vX.Y.Z tag and a GitHub Release with
+# auto-generated notes and a zip of the app. Rules are in tools/next_version.py.
+# Put "[skip release]" in a commit message to push without releasing,
+# or run it manually (Actions → Versão automática → Run workflow) to force a bump.
+name: Versão automática
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Tipo de versão"
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags for version calculation
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt pytest
+
+      - name: Testes
+        run: python -m pytest -q
+
+      - name: Calcular versão
+        id: ver
+        run: python tools/next_version.py --bump "${{ inputs.bump || 'auto' }}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Empacotar
+        if: steps.ver.outputs.version != ''
+        run: |
+          echo "version = \"${{ steps.ver.outputs.version }}\"" > rmbh_scraper/_version.py
+          mkdir -p dist
+          zip -r "dist/rm-scraping-${{ steps.ver.outputs.tag }}.zip" \
+            rmbh_scraper viewer tools docs README.md requirements.txt requirements-study.txt \
+            -x '*__pycache__*'
+
+      - name: Criar tag e release
+        if: steps.ver.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.ver.outputs.tag }}" dist/*.zip \
+            --target "$GITHUB_SHA" \
+            --title "${{ steps.ver.outputs.tag }}" \
+            --generate-notes
