@@ -1,0 +1,4 @@
+# Only needed for tools/network_study.py (browser-based reverse engineering).
+selenium>=4.20
+# Pick the chromedriver-py version matching your Chrome/Chromium major version.
+chromedriver-py
