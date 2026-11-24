@@ -173,8 +173,13 @@
   </div>
 
   <div class="field">
-    <label for="interval">Tempo entre slides</label>
+    <label for="interval">Tempo entre fotos</label>
     <div class="range"><input type="range" id="interval" min="2" max="30" step="1"><output id="intervalOut"></output></div>
+  </div>
+
+  <div class="field">
+    <label for="houseInterval">Tempo entre imóveis</label>
+    <div class="range"><input type="range" id="houseInterval" min="5" max="300" step="5"><output id="houseIntervalOut"></output></div>
   </div>
 
   <div class="field">
@@ -257,7 +262,7 @@
   const DATA_BASE = params.get("images") || DATA_URL.replace(/[^/]*$/, "");
   const STORE_KEY = "rmbh-slideshow-settings";
   const FITS = ["contain", "width", "height", "cover"];
-  const defaults = { perSlide: 1, interval: 7, imgsPer: 5, purpose: "all", order: "site", fit: "contain",
+  const defaults = { perSlide: 1, interval: 7, houseInterval: 35, imgsPer: 5, purpose: "all", order: "site", fit: "contain",
                      showInfo: true, showFeat: true, showDesc: true };
   let settings = { ...defaults };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); } catch (_) {}
@@ -267,7 +272,7 @@
   let all = [], list = [];
   let group = 0;      // index of first house in current slide
   let step = 0;       // photo step within the current group
-  let timer = null, playing = true;
+  let photoTimer = null, houseTimer = null, playing = true;
 
   const $ = (s) => document.querySelector(s);
   const show = $("#show");
@@ -371,12 +376,14 @@
   }
 
   function preloadNext() {
-    const s = step + 1 < stepsForGroup() ? step + 1 : 0;
-    const g = step + 1 < stepsForGroup() ? group : (group + perSlide()) % list.length;
+    // the next photo of the houses on screen, and the first photo of the next house(s)
+    const s = (step + 1) % stepsForGroup();
+    const g = (group + perSlide()) % list.length;
     for (let i = 0; i < perSlide(); i++) {
-      const h = list[(g + i) % list.length];
-      const im = h._imgs[s % h._imgs.length];
-      const p = new Image(); p.src = im.local || im.remote;
+      for (const [h, k] of [[houseAt(i), s], [list[(g + i) % list.length], 0]]) {
+        const im = h._imgs[k % h._imgs.length];
+        const p = new Image(); p.src = im.local || im.remote;
+      }
     }
   }
 
@@ -414,28 +421,33 @@
   }
 
   // ------------------------------------------------------------------ timing
-  function schedule() {
-    clearTimeout(timer);
+  // Two independent clocks: the photo changes every `interval` seconds (cycling through
+  // the house's photos), and the house(s) on screen change every `houseInterval` seconds.
+  // The progress bar at the bottom shows the time left until the next house.
+  const fmtSecs = (s) => s < 60 ? `${s} s` : `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ""}`;
+
+  function schedulePhoto() {
+    clearTimeout(photoTimer);
+    if (!playing || !list.length) return;
+    photoTimer = setTimeout(() => stepPhoto(1), settings.interval * 1000);
+  }
+  function schedule() {  // restart both clocks
+    clearTimeout(houseTimer);
+    schedulePhoto();
     const bar = $("#progress");
     bar.style.transition = "none"; bar.style.width = "0";
     if (!playing || !list.length) return;
     void bar.offsetWidth;
-    bar.style.transition = `width ${settings.interval}s linear`;
+    bar.style.transition = `width ${settings.houseInterval}s linear`;
     bar.style.width = "100%";
-    timer = setTimeout(() => { next(); }, settings.interval * 1000);
+    houseTimer = setTimeout(() => jump(1), settings.houseInterval * 1000);
   }
 
-  function next() {
+  function stepPhoto(dir) {
     if (!list.length) return;
-    step++;
-    if (step >= stepsForGroup()) { step = 0; group = (group + perSlide()) % list.length; }
-    render(); schedule();
-  }
-  function prev() {
-    if (!list.length) return;
-    if (step > 0) step--;
-    else { group = (group - perSlide() + list.length * 10) % list.length; step = Math.max(0, stepsForGroup() - 1); }
-    render(); schedule();
+    const n = stepsForGroup();
+    step = (step + dir + n) % n;
+    render(); schedulePhoto();
   }
   function jump(dir) {
     if (!list.length) return;
@@ -455,6 +467,8 @@
     document.querySelectorAll("#purpose button").forEach((b) => b.classList.toggle("on", b.dataset.v === settings.purpose));
     $("#interval").value = settings.interval;
     $("#intervalOut").textContent = settings.interval + " s";
+    $("#houseInterval").value = settings.houseInterval;
+    $("#houseIntervalOut").textContent = fmtSecs(settings.houseInterval);
     $("#imgsPer").value = String(settings.imgsPer);
     $("#order").value = settings.order;
     $("#fit").value = settings.fit;
@@ -469,7 +483,8 @@
 
   $("#perSlide").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ perSlide: +v }); });
   $("#purpose").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ purpose: v }, true); });
-  $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedule(); });
+  $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedulePhoto(); });
+  $("#houseInterval").addEventListener("input", (e) => { settings.houseInterval = +e.target.value; $("#houseIntervalOut").textContent = fmtSecs(settings.houseInterval); save(); schedule(); });
   $("#imgsPer").addEventListener("change", (e) => { set({ imgsPer: +e.target.value }); });
   $("#order").addEventListener("change", (e) => set({ order: e.target.value }, true));
   $("#fit").addEventListener("change", (e) => set({ fit: e.target.value }));
@@ -493,8 +508,8 @@
     if (e.target.matches("input, select") && e.key !== "Escape") return;
     switch (e.key) {
       case " ": e.preventDefault(); togglePlay(); break;
-      case "ArrowRight": next(); break;
-      case "ArrowLeft": prev(); break;
+      case "ArrowRight": stepPhoto(1); break;
+      case "ArrowLeft": stepPhoto(-1); break;
       case "ArrowDown": case "PageDown": e.preventDefault(); jump(1); break;
       case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
       case "1": case "2": case "3": set({ perSlide: +e.key }); break;

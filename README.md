@@ -120,7 +120,12 @@ If you open the page directly as a file, the browser blocks the automatic JSON l
 case, pick or drag `data/listings.json` onto the page. Photos load from `data/images/` and fall
 back to the CDN URL if a local file is missing.
 
-- **Menu (top-left button, or `M`)**: time between slides, houses at a time (1, 2 or 3),
+- **Timing**: two independent clocks.
+  - *Tempo entre fotos* (2–30 s) is how often the photo changes. It cycles through the house's
+    photos, limited by *Fotos por imóvel*, and starts over when it runs out.
+  - *Tempo entre imóveis* (5 s–5 min) is how long each house (or pair or trio) stays on screen.
+  - The bar at the bottom shows the time left until the next house.
+- **Menu (top-left button, or `M`)**: time between photos and between houses, houses at a time (1, 2 or 3),
   photos per house (1, 3, 5, 10 or all), image fit, filter (all, rent or sale), order (newest, price, shuffle),
   which overlay parts to show, play/pause, fullscreen and restart. Settings are remembered in the browser.
 - **Layout**: 1 house fills the screen, 2 split it into left and right halves, 3 into three equal
@@ -136,7 +141,7 @@ back to the CDN URL if a local file is missing.
   suites, bathrooms, parking, area ("~" means taken from the description), condo fee, IPTU,
   amenities, description, code, original title and photo counter. Fields the site doesn't
   provide are left out.
-- **Keys**: `Space` play/pause, `←`/`→` previous/next photo, `↑`/`↓` previous/next house(s),
+- **Keys**: `Space` play/pause, `←`/`→` previous/next photo of the same house(s), `↑`/`↓` previous/next house(s),
   `1` `2` `3` houses at a time, `Z` cycle image fit, `F` fullscreen.
 - Optional URL parameters: `?data=path/to/listings.json&images=path/to/data/`.
 
