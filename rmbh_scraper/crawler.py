@@ -167,7 +167,7 @@ class Crawler:
             catalog[p] = types
             jobs.append((p, 0))
             jobs.extend((p, t["id"]) for t in types)
-        log.info("running %d searches", len(jobs))
+        log.info("executando %d buscas", len(jobs))
 
         found: dict[str, dict] = {}
         type_names = {(p, t["id"]): t["name"] for p, ts in catalog.items() for t in ts}
@@ -180,15 +180,15 @@ class Crawler:
                     cards = fut.result()
                 except Exception as e:  # noqa: BLE001
                     errors.append((p, t, repr(e)))
-                    log.error("search purpose=%s type=%s failed: %s", p, t, e)
+                    log.error("busca finalidade=%s tipo=%s falhou: %s", p, t, e)
                     continue
-                log.info("search purpose=%s type=%s (%s): %d results", p, t, type_names.get((p, t), "any"), len(cards))
+                log.info("busca finalidade=%s tipo=%s (%s): %d resultados", p, t, type_names.get((p, t), "todos"), len(cards))
                 for c in cards:
                     key = listing_key(c["code"], c["purpose_id"])
                     entry = found.setdefault(key, {"card": c, "type_ids": set()})
                     entry["type_ids"].add(t)
         if errors:
-            raise RuntimeError(f"{len(errors)} searches failed: {errors[:3]}")
+            raise RuntimeError(f"{len(errors)} buscas falharam: {errors[:3]}")
         return found, catalog
 
     # ------------------------------------------------------------------ #
@@ -200,7 +200,7 @@ class Crawler:
                 c, p = futs[fut]
                 out[listing_key(c, p)] = fut.result()
                 if i % 25 == 0:
-                    log.info("details: %d/%d", i, len(keys))
+                    log.info("detalhes: %d/%d", i, len(keys))
         return out
 
     # ------------------------------------------------------------------ #
@@ -223,7 +223,7 @@ class Crawler:
             tmp.write_bytes(data)
             os.replace(tmp, path)
 
-        log.info("downloading %d new images", len(todo))
+        log.info("baixando %d fotos novas", len(todo))
         with ThreadPoolExecutor(max_workers=self.workers) as ex:
             futs = {ex.submit(_get, u, p): (u, p) for u, p in todo}
             for fut in as_completed(futs):
@@ -232,7 +232,7 @@ class Crawler:
                     ok += 1
                 except Exception as e:  # noqa: BLE001
                     failed += 1
-                    log.warning("image failed %s: %s", futs[fut][0], e)
+                    log.warning("falha na foto %s: %s", futs[fut][0], e)
         # drop local_path for files that failed
         for rec in records:
             for img in rec["images"]:
@@ -251,12 +251,12 @@ class Crawler:
         prev_active = sum(1 for r in in_scope.values() if r.get("status") == "active")
 
         found, catalog = self.discover()
-        log.info("discovered %d unique listings", len(found))
+        log.info("%d imóveis únicos encontrados", len(found))
 
         if prev_active and len(found) < prev_active * self.min_ratio and not force:
             raise RuntimeError(
-                f"Only {len(found)} listings found vs {prev_active} active last run; "
-                "refusing to mark the rest as removed (site problem?). Use --force to override."
+                f"Apenas {len(found)} imóveis encontrados, contra {prev_active} ativos na última coleta; "
+                "os demais não serão marcados como removidos (problema no site?). Use --force para aceitar mesmo assim."
             )
 
         missing = [k for k, r in in_scope.items() if k not in found and r.get("status") != "removed"]
@@ -272,7 +272,7 @@ class Crawler:
             det = details.get(key)
             if det is None:
                 # In search results but detail page empty: keep card-only data.
-                log.warning("detail missing for %s; using card data only", key)
+                log.warning("detalhes indisponíveis para %s; usando apenas os dados da listagem", key)
                 card = entry["card"]
                 det = {
                     "code": card["code"],
@@ -337,7 +337,7 @@ class Crawler:
         stamp = report["finished_at"].replace(":", "").replace("+0000", "Z")
         _atomic_write_json(self.data_dir / "runs" / f"{stamp}.json", report)
         log.info(
-            "done: %d active (%d new, %d changed, %d removed, %d unlisted)",
+            "concluído: %d ativos (%d novos, %d alterados, %d removidos, %d fora da busca)",
             counts["active"],
             len(report["added"]),
             len(report["changed"]),

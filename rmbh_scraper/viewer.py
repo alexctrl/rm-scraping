@@ -63,26 +63,26 @@ def _bind(handler, host: str, port: int) -> ThreadingHTTPServer:
         except OSError as e:
             if e.errno != errno.EADDRINUSE:
                 raise
-    raise OSError("no free port found")
+    raise OSError("nenhuma porta livre encontrada")
 
 
 def serve(data_dir: str | Path = "data", host: str = "127.0.0.1", port: int = 8000, open_browser: bool = True) -> None:
     """Serve the viewer and block until Ctrl+C."""
     if not (VIEWER_DIR / "index.html").exists():
-        raise FileNotFoundError(f"viewer not found at {VIEWER_DIR}")
+        raise FileNotFoundError(f"apresentação não encontrada em {VIEWER_DIR}")
     data_dir = Path(data_dir).resolve()
     if not (data_dir / "listings.json").exists():
-        log.warning("%s has no listings.json yet; run `crawl` first", data_dir)
+        log.warning("%s ainda não tem listings.json; execute `crawl` primeiro", data_dir)
     handler = functools.partial(_Handler, mounts={"viewer": VIEWER_DIR, "data": data_dir})
     httpd = _bind(handler, host, port)
     url = f"http://{host}:{httpd.server_address[1]}/viewer/"
-    log.info("slideshow viewer running at %s  (Ctrl+C to stop)", url)
-    print(f"\nSlideshow: {url}  (press Ctrl+C to stop)", flush=True)
+    log.info("apresentação disponível em %s  (Ctrl+C para parar)", url)
+    print(f"\nApresentação: {url}  (pressione Ctrl+C para parar)", flush=True)
     if open_browser and os.environ.get("RMBH_NO_BROWSER") != "1":
         threading.Timer(0.5, lambda: webbrowser.open(url)).start()
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nviewer stopped")
+        print("\napresentação encerrada")
     finally:
         httpd.server_close()
