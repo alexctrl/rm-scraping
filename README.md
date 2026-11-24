@@ -11,6 +11,26 @@ each time you run it, so it is meant to run once a day.
 
 ## Install
 
+### Windows (one-click installer)
+
+1. Download **[instalar.bat](https://github.com/alexctrl/rm-scraping/releases/latest/download/instalar.bat)**
+   into the folder where you want the program installed.
+2. Double-click it. It will:
+   - download the latest release from GitHub into that folder;
+   - install Python 3.12 for your user if no Python 3.9+ is found (no admin rights needed);
+   - create `.venv\` and install the dependencies;
+   - create **`Coletar imoveis.bat`**, which crawls and then opens the slideshow, and
+     **`Abrir apresentacao.bat`**, which opens the slideshow with the current data;
+   - optionally schedule a daily crawl in the Windows Task Scheduler. The task is named
+     `RM Imoveis - coleta diaria`, logs to `data\coleta.log`, and runs late if the PC was off at
+     the scheduled time.
+
+Run `instalar.bat` again at any time to update to the newest release. Your `data\` folder is
+never touched. Windows may show a SmartScreen warning the first time because the file was
+downloaded from the internet: click *Mais informações → Executar assim mesmo*.
+
+### Manually
+
 ```bash
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
