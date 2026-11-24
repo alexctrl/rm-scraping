@@ -36,6 +36,12 @@
     object-fit: contain; /* fit by width or height, never crop */
     opacity: 0; transition: opacity .7s ease; }
   .stage img.on { opacity: 1; }
+  /* image fit modes (menu "Ajuste da imagem") */
+  #show.fit-width  .stage img { inset: auto; left: 0; top: 50%; width: 100%; height: auto;
+    max-width: none; max-height: none; transform: translateY(-50%); }
+  #show.fit-height .stage img { inset: auto; top: 0; left: 50%; height: 100%; width: auto;
+    max-width: none; max-height: none; transform: translateX(-50%); }
+  #show.fit-cover  .stage img { object-fit: cover; }
 
   .badge { position: absolute; top: 14px; right: 14px; z-index: 3; display: flex; gap: 8px; align-items: center; }
   .pill { background: var(--accent); color: #0b0f14; font-weight: 800; letter-spacing: .08em;
@@ -183,6 +189,16 @@
   </div>
 
   <div class="field">
+    <label for="fit">Ajuste da imagem</label>
+    <select id="fit">
+      <option value="contain">Imagem inteira (sem cortar)</option>
+      <option value="width">Ajustar à largura</option>
+      <option value="height">Ajustar à altura</option>
+      <option value="cover">Preencher o quadro (zoom)</option>
+    </select>
+  </div>
+
+  <div class="field">
     <span class="lbl">Exibir</span>
     <div class="seg" id="purpose">
       <button data-v="all">Todos</button><button data-v="rent">Aluguel</button><button data-v="sale">Venda</button>
@@ -218,7 +234,7 @@
   <div class="keys">
     <kbd>Espaço</kbd> reproduzir / pausar &nbsp; <kbd>→</kbd> próxima foto &nbsp; <kbd>←</kbd> foto anterior<br>
     <kbd>↓</kbd> próximo(s) imóvel(is) &nbsp; <kbd>↑</kbd> imóvel(is) anterior(es)<br>
-    <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> imóveis por tela &nbsp; <kbd>F</kbd> tela cheia &nbsp; <kbd>M</kbd> menu
+    <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> imóveis por tela &nbsp; <kbd>F</kbd> tela cheia &nbsp; <kbd>Z</kbd> ajuste da imagem &nbsp; <kbd>M</kbd> menu
   </div>
 </aside>
 
@@ -240,7 +256,8 @@
   // local_path in the JSON is relative to the data directory
   const DATA_BASE = params.get("images") || DATA_URL.replace(/[^/]*$/, "");
   const STORE_KEY = "rmbh-slideshow-settings";
-  const defaults = { perSlide: 1, interval: 7, imgsPer: 5, purpose: "all", order: "site",
+  const FITS = ["contain", "width", "height", "cover"];
+  const defaults = { perSlide: 1, interval: 7, imgsPer: 5, purpose: "all", order: "site", fit: "contain",
                      showInfo: true, showFeat: true, showDesc: true };
   let settings = { ...defaults };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); } catch (_) {}
@@ -298,7 +315,8 @@
   function layout() {
     const n = perSlide();
     show.dataset.n = n;
-    show.className = [settings.showInfo ? "" : "hide-info", settings.showFeat ? "" : "hide-feat", settings.showDesc ? "" : "hide-desc"].join(" ");
+    show.className = ["fit-" + (FITS.includes(settings.fit) ? settings.fit : "contain"),
+      settings.showInfo ? "" : "hide-info", settings.showFeat ? "" : "hide-feat", settings.showDesc ? "" : "hide-desc"].join(" ");
     show.innerHTML = "";
     if (!list.length) { show.innerHTML = '<div class="empty">Nenhum imóvel corresponde a este filtro.</div>'; return; }
     for (let i = 0; i < n; i++) {
@@ -439,6 +457,7 @@
     $("#intervalOut").textContent = settings.interval + " s";
     $("#imgsPer").value = String(settings.imgsPer);
     $("#order").value = settings.order;
+    $("#fit").value = settings.fit;
     $("#showInfo").checked = settings.showInfo;
     $("#showFeat").checked = settings.showFeat;
     $("#showDesc").checked = settings.showDesc;
@@ -453,6 +472,7 @@
   $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedule(); });
   $("#imgsPer").addEventListener("change", (e) => { set({ imgsPer: +e.target.value }); });
   $("#order").addEventListener("change", (e) => set({ order: e.target.value }, true));
+  $("#fit").addEventListener("change", (e) => set({ fit: e.target.value }));
   $("#showInfo").addEventListener("change", (e) => set({ showInfo: e.target.checked }));
   $("#showFeat").addEventListener("change", (e) => set({ showFeat: e.target.checked }));
   $("#showDesc").addEventListener("change", (e) => set({ showDesc: e.target.checked }));
@@ -479,6 +499,7 @@
       case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
       case "1": case "2": case "3": set({ perSlide: +e.key }); break;
       case "f": case "F": toggleFs(); break;
+      case "z": case "Z": set({ fit: FITS[(FITS.indexOf(settings.fit) + 1) % FITS.length] }); break;
       case "m": case "M": openMenu(); break;
       case "Escape": openMenu(false); break;
     }
