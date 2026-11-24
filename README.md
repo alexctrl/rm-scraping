@@ -19,14 +19,23 @@ pip install -r requirements.txt
 ## Daily crawl
 
 ```bash
-python -m rmbh_scraper crawl --images        # full crawl + download new photos
-python -m rmbh_scraper crawl                 # data only (image URLs, no download)
+python -m rmbh_scraper crawl --images        # full crawl + download new photos, then open the slideshow
+python -m rmbh_scraper crawl                 # data only (image URLs, no download), then open the slideshow
+python -m rmbh_scraper view                  # just open the slideshow for the current data
 ```
+
+When a crawl run from a terminal finishes, it starts a local web server and opens the
+slideshow (`http://127.0.0.1:8000/viewer/`) in your browser. Press `Ctrl+C` to stop it.
+- `--no-view` skips the slideshow.
+- `--no-browser` starts the server without opening a browser.
+- `--port N` uses a different port. If the port is busy, the next free one is used.
+- Runs without a terminal (cron, CI) skip the viewer automatically and exit when the
+  crawl is done.
 
 Example cron line (runs every day at 06:15):
 
 ```cron
-15 6 * * * cd /path/to/rm-scraping && .venv/bin/python -m rmbh_scraper crawl --images >> data/crawl.log 2>&1
+15 6 * * * cd /path/to/rm-scraping && .venv/bin/python -m rmbh_scraper crawl --images --no-view >> data/crawl.log 2>&1
 ```
 
 Each run does the following:
@@ -104,8 +113,7 @@ A single-file HTML/JS app that presents the listings from `data/listings.json` a
 slideshow.
 
 ```bash
-python -m http.server 8000        # run from the project root
-# open http://localhost:8000/viewer/
+python -m rmbh_scraper view       # or: it opens automatically after `crawl`
 ```
 
 If you open the page directly as a file, the browser blocks the automatic JSON load. In that
@@ -150,7 +158,8 @@ python -m rmbh_scraper neighborhoods --purpose sale --type 2
 python -m rmbh_scraper search --purpose rent --type 1
 python -m rmbh_scraper search --purpose sale --type 2 --bedrooms 3 --neighborhood 44
 python -m rmbh_scraper get 3240 --purpose sale
-python -m rmbh_scraper crawl [--images] [--purpose rent] [--workers 4] [--delay 0.25] [--data-dir data] [--force]
+python -m rmbh_scraper crawl [--images] [--purpose rent] [--workers 4] [--delay 0.25] [--data-dir data] [--force] [--no-view] [--no-browser] [--port 8000]
+python -m rmbh_scraper view [--data-dir data] [--port 8000] [--no-browser]
 ```
 
 ## Project layout
@@ -161,6 +170,8 @@ rmbh_scraper/
   parsers.py   pure HTML -> dict parsers (types, neighbourhoods, result cards, detail page)
   crawler.py   full crawl, de-duplication, incremental merge, image download, reports
   cli.py       command line
+  viewer.py    local web server for the slideshow (viewer/ + data/)
+viewer/index.html        slideshow app
 tools/network_study.py   Selenium + DevTools network recorder used to study the site
 docs/SITE_STUDY.md       endpoints, parameters, quirks, data inventory
 tests/                   parser + merge tests on saved HTML fixtures (pytest)

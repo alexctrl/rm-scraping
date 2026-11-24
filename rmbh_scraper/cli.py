@@ -1,6 +1,7 @@
 """Command line interface.
 
-    python -m rmbh_scraper crawl [--data-dir data] [--images] [--workers 4]
+    python -m rmbh_scraper crawl [--data-dir data] [--images] [--workers 4] [--no-view]
+    python -m rmbh_scraper view [--data-dir data] [--port 8000]
     python -m rmbh_scraper get 3240 --purpose sale
     python -m rmbh_scraper search --purpose sale --type 2 [--bedrooms 3] [--neighborhood 44]
     python -m rmbh_scraper types --purpose rent
@@ -44,6 +45,15 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--workers", type=int, default=4)
     c.add_argument("--purpose", type=_purpose, action="append", help="limit to rent or sale (repeatable)")
     c.add_argument("--force", action="store_true", help="accept a run that found far fewer listings than before")
+    c.add_argument("--no-view", action="store_true", help="don't open the slideshow viewer after the crawl")
+    c.add_argument("--port", type=int, default=8000, help="viewer port (default 8000)")
+    c.add_argument("--no-browser", action="store_true", help="start the viewer server but don't open a browser")
+
+    v = sub.add_parser("view", help="open the slideshow viewer for the current data")
+    v.add_argument("--data-dir", default="data")
+    v.add_argument("--port", type=int, default=8000)
+    v.add_argument("--host", default="127.0.0.1")
+    v.add_argument("--no-browser", action="store_true", help="start the server but don't open a browser")
 
     g = sub.add_parser("get", help="fetch one listing detail")
     g.add_argument("code", type=int)
@@ -80,6 +90,19 @@ def main(argv: list[str] | None = None) -> int:
         )
         report = crawler.run(force=a.force)
         _dump({k: (len(v) if isinstance(v, list) else v) for k, v in report.items()})
+        if a.no_view:
+            return 0
+        if not sys.stdin.isatty():
+            # scheduled/unattended run (cron, CI): don't block on a web server
+            logging.getLogger(__name__).info("non-interactive run: skipping viewer (use `view` to open it)")
+            return 0
+        from .viewer import serve
+
+        serve(a.data_dir, port=a.port, open_browser=not a.no_browser)
+    elif a.cmd == "view":
+        from .viewer import serve
+
+        serve(a.data_dir, host=a.host, port=a.port, open_browser=not a.no_browser)
     elif a.cmd == "get":
         d = client.get_listing(a.code, a.purpose)
         if d is None:

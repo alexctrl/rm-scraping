@@ -95,3 +95,21 @@ def test_merge_tracks_changes():
     assert report["changed"][0]["fields"] == ["price"]
     assert [h["price"] for h in second["price_history"]] == [440000.0, 430000.0]
     assert second["property_type_ids"] == [2]
+
+
+def test_partial_purpose_crawl_keeps_other_purposes(tmp_path, monkeypatch):
+    import json
+
+    rec = _record()
+    Crawler._merge(rec, None, "t1", {"added": [], "changed": [], "removed": [], "unlisted": []})
+    (tmp_path / "listings.json").write_text(json.dumps({"meta": {}, "listings": [rec]}))
+    class _Stub:
+        base_url = "https://example.invalid/"
+
+    crawler = Crawler(client=_Stub(), data_dir=tmp_path, purposes=(1,))  # rent only
+    monkeypatch.setattr(crawler, "discover", lambda: ({}, {1: []}))
+    monkeypatch.setattr(crawler, "fetch_details", lambda keys: {})
+    report = crawler.run()
+    assert report["removed"] == []
+    saved = json.loads((tmp_path / "listings.json").read_text())["listings"]
+    assert saved[0]["status"] == "active"  # the sale listing was not touched

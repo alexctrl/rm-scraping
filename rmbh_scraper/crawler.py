@@ -245,7 +245,10 @@ class Crawler:
         started = _now()
         db = self.load_db()
         previous: dict[str, dict] = {r["id"]: r for r in db.get("listings", [])}
-        prev_active = sum(1 for r in previous.values() if r.get("status") == "active")
+        # Only listings of the purposes being crawled can be compared / removed
+        # (a `--purpose rent` run must not touch sale listings).
+        in_scope = {k: r for k, r in previous.items() if r.get("purpose_id") in self.purposes}
+        prev_active = sum(1 for r in in_scope.values() if r.get("status") == "active")
 
         found, catalog = self.discover()
         log.info("discovered %d unique listings", len(found))
@@ -256,7 +259,7 @@ class Crawler:
                 "refusing to mark the rest as removed (site problem?). Use --force to override."
             )
 
-        missing = [k for k, r in previous.items() if k not in found and r.get("status") != "removed"]
+        missing = [k for k, r in in_scope.items() if k not in found and r.get("status") != "removed"]
         detail_keys = [(e["card"]["code"], e["card"]["purpose_id"]) for e in found.values()]
         detail_keys += [(previous[k]["code"], previous[k]["purpose_id"]) for k in missing]
         details = self.fetch_details(detail_keys)
