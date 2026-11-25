@@ -11,23 +11,27 @@ each time you run it, so it is meant to run once a day.
 
 ## Install
 
-### Windows (one-click installer)
+### Windows: one file does everything
 
-1. Download **[instalar.bat](https://github.com/alexctrl/rm-scraping/releases/latest/download/instalar.bat)**
-   into the folder where you want the program installed.
-2. Double-click it. It will:
-   - download the latest release from GitHub into that folder;
-   - install Python 3.12 for your user if no Python 3.9+ is found (no admin rights needed);
-   - create `.venv\` and install the dependencies;
-   - create **`Coletar imoveis.bat`**, which crawls and then opens the slideshow, and
-     **`Abrir apresentacao.bat`**, which opens the slideshow with the current data;
-   - optionally schedule a daily crawl in the Windows Task Scheduler. The task is named
-     `RM Imoveis - coleta diaria`, logs to `data\coleta.log`, and runs late if the PC was off at
-     the scheduled time.
+Download **[RM-Imoveis.bat](https://github.com/alexctrl/rm-scraping/releases/latest/download/RM-Imoveis.bat)**
+into the folder where you want the program, then double-click it whenever you want to use it.
 
-Run `instalar.bat` again at any time to update to the newest release. Your `data\` folder is
-never touched. Windows may show a SmartScreen warning the first time because the file was
-downloaded from the internet: click *Mais informações → Executar assim mesmo*.
+- **The first time** it installs into that folder:
+  - downloads the latest release from GitHub;
+  - installs Python 3.12 for your user if no Python 3.9+ is found (no admin rights needed);
+  - creates `.venv\` and installs the dependencies;
+  - optionally schedules a daily background crawl in the Windows Task Scheduler. The task is
+    named `RM Imoveis - coleta diaria` and logs to `data\coleta.log`.
+- **Every time**, including the first:
+  1. It checks GitHub for a newer release. If there is one, it downloads it and updates itself;
+     a newer copy of `RM-Imoveis.bat` takes effect from the next run.
+  2. It crawls the site. If the crawl fails, the last data is shown.
+  3. It opens the slideshow full screen in Chrome or Edge. `F11` leaves full screen, and closing
+     the window (`Alt+F4`) ends the program.
+- Without internet it skips the update and the crawl fails, so the slideshow shows the last data.
+- Your `data\` folder is never touched. The slideshow's settings are kept in `data\.navegador\`.
+- Windows may show a SmartScreen warning the first time, because the file was downloaded from
+  the internet. Click *Mais informações → Executar assim mesmo*.
 
 ### Manually
 
@@ -48,6 +52,8 @@ When a crawl run from a terminal finishes, it starts a local web server and open
 slideshow (`http://127.0.0.1:8000/viewer/`) in your browser. Press `Ctrl+C` to stop it.
 - `--no-view` skips the slideshow.
 - `--no-browser` starts the server without opening a browser.
+- `--fullscreen` opens the slideshow full screen in Chrome or Edge, in its own window and profile.
+  Closing that window stops the server.
 - `--port N` uses a different port. If the port is busy, the next free one is used.
 - Runs without a terminal (cron, CI) skip the viewer automatically and exit when the
   crawl is done.
@@ -191,8 +197,8 @@ python -m rmbh_scraper neighborhoods --purpose sale --type 2
 python -m rmbh_scraper search --purpose rent --type 1
 python -m rmbh_scraper search --purpose sale --type 2 --bedrooms 3 --neighborhood 44
 python -m rmbh_scraper get 3240 --purpose sale
-python -m rmbh_scraper crawl [--images] [--purpose rent] [--workers 4] [--delay 0.25] [--data-dir data] [--force] [--no-view] [--no-browser] [--port 8000]
-python -m rmbh_scraper view [--data-dir data] [--port 8000] [--no-browser]
+python -m rmbh_scraper crawl [--images] [--purpose rent] [--workers 4] [--delay 0.25] [--data-dir data] [--force] [--no-view] [--no-browser] [--fullscreen] [--port 8000]
+python -m rmbh_scraper view [--data-dir data] [--port 8000] [--no-browser] [--fullscreen]
 ```
 
 ## Project layout

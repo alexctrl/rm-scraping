@@ -56,14 +56,14 @@ jobs:
             -x '*__pycache__*'
           # stable names, so .../releases/latest/download/<name> always works
           cp "dist/rm-scraping-${{ steps.ver.outputs.tag }}.zip" dist/rm-scraping.zip
-          cp instalar.bat dist/instalar.bat
+          cp RM-Imoveis.bat dist/RM-Imoveis.bat
 
       - name: Criar tag e release
         if: steps.ver.outputs.version != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ steps.ver.outputs.tag }}" dist/*.zip dist/instalar.bat \
+          gh release create "${{ steps.ver.outputs.tag }}" dist/*.zip dist/RM-Imoveis.bat \
             --target "$GITHUB_SHA" \
             --title "${{ steps.ver.outputs.tag }}" \
             --generate-notes

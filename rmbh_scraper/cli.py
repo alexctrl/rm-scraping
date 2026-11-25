@@ -86,12 +86,14 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--no-view", action="store_true", help="não abre a apresentação ao final da coleta")
     c.add_argument("--port", type=int, default=8000, help="porta da apresentação (padrão 8000)")
     c.add_argument("--no-browser", action="store_true", help="inicia o servidor da apresentação sem abrir o navegador")
+    c.add_argument("--fullscreen", action="store_true", help="abre a apresentação em tela cheia (Chrome/Edge)")
 
     v = sub.add_parser("view", help="abre a apresentação com os dados atuais")
     v.add_argument("--data-dir", default="data", help="pasta dos dados (padrão: data)")
     v.add_argument("--port", type=int, default=8000, help="porta (padrão 8000)")
     v.add_argument("--host", default="127.0.0.1", help="endereço do servidor (padrão 127.0.0.1)")
     v.add_argument("--no-browser", action="store_true", help="inicia o servidor sem abrir o navegador")
+    v.add_argument("--fullscreen", action="store_true", help="abre em tela cheia (Chrome/Edge); fechar a janela encerra")
 
     g = sub.add_parser("get", help="busca os detalhes de um imóvel")
     g.add_argument("code", type=int, help="código do imóvel")
@@ -138,11 +140,11 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         from .viewer import serve
 
-        serve(a.data_dir, port=a.port, open_browser=not a.no_browser)
+        serve(a.data_dir, port=a.port, open_browser=not a.no_browser, fullscreen=a.fullscreen)
     elif a.cmd == "view":
         from .viewer import serve
 
-        serve(a.data_dir, host=a.host, port=a.port, open_browser=not a.no_browser)
+        serve(a.data_dir, host=a.host, port=a.port, open_browser=not a.no_browser, fullscreen=a.fullscreen)
     elif a.cmd == "get":
         d = client.get_listing(a.code, a.purpose)
         if d is None:
