@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RM Imóveis Slideshow</title>
+<title>Apresentação RM Imóveis</title>
 <style>
   :root {
     --bg: #0b0f14;
@@ -14,7 +14,7 @@
     --line: #263142;
     --rent: #22b8a7;      /* teal  — Aluguel */
     --sale: #f0954a;      /* amber — Venda   */
-    --frame: 10px;
+    --frame: 5px;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
@@ -36,6 +36,12 @@
     object-fit: contain; /* fit by width or height, never crop */
     opacity: 0; transition: opacity .7s ease; }
   .stage img.on { opacity: 1; }
+  /* image fit modes (menu "Ajuste da imagem") */
+  #show.fit-width  .stage img { inset: auto; left: 0; top: 50%; width: 100%; height: auto;
+    max-width: none; max-height: none; transform: translateY(-50%); }
+  #show.fit-height .stage img { inset: auto; top: 0; left: 50%; height: 100%; width: auto;
+    max-width: none; max-height: none; transform: translateX(-50%); }
+  #show.fit-cover  .stage img { object-fit: cover; }
 
   .badge { position: absolute; top: 14px; right: 14px; z-index: 3; display: flex; gap: 8px; align-items: center; }
   .pill { background: var(--accent); color: #0b0f14; font-weight: 800; letter-spacing: .08em;
@@ -143,90 +149,105 @@
 
 <div id="show" data-n="1"></div>
 <div id="progress"></div>
-<div id="paused">⏸ Paused — press Space to resume</div>
+<div id="paused">⏸ Pausado — pressione Espaço para continuar</div>
 
-<button id="menuBtn" title="Settings (M)" aria-label="Open settings">
+<button id="menuBtn" title="Configurações (M)" aria-label="Abrir configurações">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
     <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
   </svg>
 </button>
 <div id="scrim"></div>
 
-<aside id="menu" aria-label="Presentation settings">
-  <h2>Presentation</h2>
-  <p class="sub">RM Imóveis listings</p>
+<aside id="menu" aria-label="Configurações da apresentação">
+  <h2>Apresentação</h2>
+  <p class="sub">Imóveis da RM Imóveis</p>
   <div id="count"></div>
 
-  <div class="legend"><span><i style="background:var(--rent)"></i>Rent (Aluguel)</span><span><i style="background:var(--sale)"></i>Sale (Venda)</span></div>
+  <div class="legend"><span><i style="background:var(--rent)"></i>Aluguel</span><span><i style="background:var(--sale)"></i>Venda</span></div>
 
   <div class="field">
-    <span class="lbl">Houses at a time</span>
+    <span class="lbl">Imóveis por tela</span>
     <div class="seg" id="perSlide">
       <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button>
     </div>
   </div>
 
   <div class="field">
-    <label for="interval">Time between slides</label>
+    <label for="interval">Tempo entre fotos</label>
     <div class="range"><input type="range" id="interval" min="2" max="30" step="1"><output id="intervalOut"></output></div>
   </div>
 
   <div class="field">
-    <label for="imgsPer">Photos per house</label>
+    <label for="houseInterval">Tempo entre imóveis</label>
+    <div class="range"><input type="range" id="houseInterval" min="5" max="300" step="5"><output id="houseIntervalOut"></output></div>
+  </div>
+
+  <div class="field">
+    <label for="imgsPer">Fotos por imóvel</label>
     <select id="imgsPer">
-      <option value="1">1 (main photo only)</option>
+      <option value="1">1 (só a foto principal)</option>
       <option value="3">3</option>
       <option value="5">5</option>
       <option value="10">10</option>
-      <option value="0">All photos</option>
+      <option value="0">Todas as fotos</option>
     </select>
   </div>
 
   <div class="field">
-    <span class="lbl">Show</span>
+    <label for="fit">Ajuste da imagem</label>
+    <select id="fit">
+      <option value="contain">Imagem inteira (sem cortar)</option>
+      <option value="width">Ajustar à largura</option>
+      <option value="height">Ajustar à altura</option>
+      <option value="cover">Preencher o quadro (zoom)</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <span class="lbl">Exibir</span>
     <div class="seg" id="purpose">
-      <button data-v="all">All</button><button data-v="rent">Rent</button><button data-v="sale">Sale</button>
+      <button data-v="all">Todos</button><button data-v="rent">Aluguel</button><button data-v="sale">Venda</button>
     </div>
   </div>
 
   <div class="field">
-    <label for="order">Order</label>
+    <label for="order">Ordem</label>
     <select id="order">
-      <option value="site">Newest code first</option>
-      <option value="price-asc">Price: low → high</option>
-      <option value="price-desc">Price: high → low</option>
-      <option value="shuffle">Shuffle</option>
+      <option value="site">Código mais recente primeiro</option>
+      <option value="price-asc">Preço: menor → maior</option>
+      <option value="price-desc">Preço: maior → menor</option>
+      <option value="shuffle">Aleatória</option>
     </select>
   </div>
 
   <div class="field">
-    <span class="lbl">Overlay</span>
-    <label class="check"><input type="checkbox" id="showInfo"> Show details</label>
-    <label class="check"><input type="checkbox" id="showFeat"> Show amenities</label>
-    <label class="check"><input type="checkbox" id="showDesc"> Show description</label>
+    <span class="lbl">Informações na tela</span>
+    <label class="check"><input type="checkbox" id="showInfo"> Mostrar detalhes</label>
+    <label class="check"><input type="checkbox" id="showFeat"> Mostrar comodidades</label>
+    <label class="check"><input type="checkbox" id="showDesc"> Mostrar descrição</label>
   </div>
 
   <div class="row">
-    <button class="btn" id="playBtn">Pause</button>
-    <button class="btn" id="fsBtn">Fullscreen</button>
+    <button class="btn" id="playBtn">Pausar</button>
+    <button class="btn" id="fsBtn">Tela cheia</button>
   </div>
   <div class="row" style="margin-top:8px">
-    <button class="btn" id="restartBtn">Restart</button>
-    <label class="btn" style="text-align:center">Load JSON…<input type="file" accept=".json,application/json" id="fileIn2" hidden></label>
+    <button class="btn" id="restartBtn">Reiniciar</button>
+    <label class="btn" style="text-align:center">Carregar JSON…<input type="file" accept=".json,application/json" id="fileIn2" hidden></label>
   </div>
 
   <div class="keys">
-    <kbd>Space</kbd> play / pause &nbsp; <kbd>→</kbd> next photo &nbsp; <kbd>←</kbd> back<br>
-    <kbd>↓</kbd> next house(s) &nbsp; <kbd>↑</kbd> previous house(s)<br>
-    <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> houses at a time &nbsp; <kbd>F</kbd> fullscreen &nbsp; <kbd>M</kbd> menu
+    <kbd>Espaço</kbd> reproduzir / pausar &nbsp; <kbd>→</kbd> próxima foto &nbsp; <kbd>←</kbd> foto anterior<br>
+    <kbd>↓</kbd> próximo(s) imóvel(is) &nbsp; <kbd>↑</kbd> imóvel(is) anterior(es)<br>
+    <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> imóveis por tela &nbsp; <kbd>F</kbd> tela cheia &nbsp; <kbd>Z</kbd> ajuste da imagem &nbsp; <kbd>M</kbd> menu
   </div>
 </aside>
 
 <div id="loader">
   <div class="drop" id="drop">
-    <h1>Load listings</h1>
-    <p id="loaderMsg">Looking for <code>../data/listings.json</code>…</p>
-    <label class="btn">Choose listings.json<input type="file" accept=".json,application/json" id="fileIn" hidden></label>
+    <h1>Carregar imóveis</h1>
+    <p id="loaderMsg">Procurando <code>../data/listings.json</code>…</p>
+    <label class="btn">Escolher listings.json<input type="file" accept=".json,application/json" id="fileIn" hidden></label>
   </div>
 </div>
 
@@ -240,7 +261,8 @@
   // local_path in the JSON is relative to the data directory
   const DATA_BASE = params.get("images") || DATA_URL.replace(/[^/]*$/, "");
   const STORE_KEY = "rmbh-slideshow-settings";
-  const defaults = { perSlide: 1, interval: 7, imgsPer: 5, purpose: "all", order: "site",
+  const FITS = ["contain", "width", "height", "cover"];
+  const defaults = { perSlide: 1, interval: 7, houseInterval: 35, imgsPer: 5, purpose: "all", order: "site", fit: "contain",
                      showInfo: true, showFeat: true, showDesc: true };
   let settings = { ...defaults };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); } catch (_) {}
@@ -250,7 +272,7 @@
   let all = [], list = [];
   let group = 0;      // index of first house in current slide
   let step = 0;       // photo step within the current group
-  let timer = null, playing = true;
+  let photoTimer = null, houseTimer = null, playing = true;
 
   const $ = (s) => document.querySelector(s);
   const show = $("#show");
@@ -286,7 +308,7 @@
     if (resetPos) { group = 0; step = 0; }
     group = list.length ? group % list.length : 0;
     const rent = list.filter((r) => r.purpose === "rent").length;
-    $("#count").textContent = `${list.length} houses (${rent} rent · ${list.length - rent} sale)`;
+    $("#count").textContent = `${list.length} imóveis (${rent} aluguel · ${list.length - rent} venda)`;
     layout();
     render();
     schedule();
@@ -298,9 +320,10 @@
   function layout() {
     const n = perSlide();
     show.dataset.n = n;
-    show.className = [settings.showInfo ? "" : "hide-info", settings.showFeat ? "" : "hide-feat", settings.showDesc ? "" : "hide-desc"].join(" ");
+    show.className = ["fit-" + (FITS.includes(settings.fit) ? settings.fit : "contain"),
+      settings.showInfo ? "" : "hide-info", settings.showFeat ? "" : "hide-feat", settings.showDesc ? "" : "hide-desc"].join(" ");
     show.innerHTML = "";
-    if (!list.length) { show.innerHTML = '<div class="empty">No listings match this filter.</div>'; return; }
+    if (!list.length) { show.innerHTML = '<div class="empty">Nenhum imóvel corresponde a este filtro.</div>'; return; }
     for (let i = 0; i < n; i++) {
       const slot = document.createElement("section");
       slot.className = "slot";
@@ -329,7 +352,7 @@
       }
       slot.querySelector(".badge").innerHTML =
         `<span class="pill ghost">${idx + 1} / ${h._imgs.length}</span>` +
-        `<span class="pill">${h.purpose === "rent" ? "Rent · Aluguel" : "Sale · Venda"}</span>`;
+        `<span class="pill">${h.purpose === "rent" ? "Aluguel" : "Venda"}</span>`;
       setImage(slot.querySelector(".stage"), h._imgs[idx]);
     });
     preloadNext();
@@ -353,18 +376,20 @@
   }
 
   function preloadNext() {
-    const s = step + 1 < stepsForGroup() ? step + 1 : 0;
-    const g = step + 1 < stepsForGroup() ? group : (group + perSlide()) % list.length;
+    // the next photo of the houses on screen, and the first photo of the next house(s)
+    const s = (step + 1) % stepsForGroup();
+    const g = (group + perSlide()) % list.length;
     for (let i = 0; i < perSlide(); i++) {
-      const h = list[(g + i) % list.length];
-      const im = h._imgs[s % h._imgs.length];
-      const p = new Image(); p.src = im.local || im.remote;
+      for (const [h, k] of [[houseAt(i), s], [list[(g + i) % list.length], 0]]) {
+        const im = h._imgs[k % h._imgs.length];
+        const p = new Image(); p.src = im.local || im.remote;
+      }
     }
   }
 
   function fmtPrice(h) {
     if (typeof h.price === "number") return brl.format(h.price);
-    return h.price_text || "Price on request";
+    return h.price_text || "Preço sob consulta";
   }
 
   function infoHTML(h) {
@@ -373,51 +398,56 @@
       `<span class="stat"><b>${esc(v)}</b><span>${label}</span></span>`;
     const area = h.area_m2 ? `${h.area_source === "description" ? "~" : ""}${num.format(h.area_m2)} m²` : null;
     const stats = [
-      stat(h.bedrooms, h.bedrooms === 1 ? "bedroom" : "bedrooms"),
-      stat(h.suites, h.suites === 1 ? "suite" : "suites"),
-      stat(h.bathrooms, h.bathrooms === 1 ? "bathroom" : "bathrooms"),
-      stat(h.parking_spaces, h.parking_spaces === 1 ? "parking spot" : "parking spots"),
-      area ? `<span class="stat"><b>${esc(area)}</b><span>area</span></span>` : "",
+      stat(h.bedrooms, h.bedrooms === 1 ? "quarto" : "quartos"),
+      stat(h.suites, h.suites === 1 ? "suíte" : "suítes"),
+      stat(h.bathrooms, h.bathrooms === 1 ? "banheiro" : "banheiros"),
+      stat(h.parking_spaces, h.parking_spaces === 1 ? "vaga" : "vagas"),
+      area ? `<span class="stat"><b>${esc(area)}</b><span>de área</span></span>` : "",
     ].join("");
     const fees = [
-      typeof h.condo_fee === "number" ? `Condo fee <b>${brl.format(h.condo_fee)}</b>` : "",
+      typeof h.condo_fee === "number" ? `Condomínio <b>${brl.format(h.condo_fee)}</b>` : "",
       typeof h.iptu === "number" ? `IPTU <b>${brl.format(h.iptu)}</b>` : "",
     ].filter(Boolean).join(" &nbsp;·&nbsp; ");
     const chips = (h.features || []).map((f) => `<span class="chip">${esc(f)}</span>`).join("");
     return `
       <div class="type">${esc(h.property_type || "Imóvel")}</div>
-      <div class="price">${esc(fmtPrice(h))}${h.purpose === "rent" ? "<small>/ month</small>" : ""}</div>
+      <div class="price">${esc(fmtPrice(h))}${h.purpose === "rent" ? "<small>/ mês</small>" : ""}</div>
       ${loc ? `<div class="loc">📍 ${esc(loc)}</div>` : ""}
       ${stats ? `<div class="stats">${stats}</div>` : ""}
       ${fees ? `<div class="fees">${fees}</div>` : ""}
       ${chips ? `<div class="chips">${chips}</div>` : ""}
       ${h.description ? `<div class="desc">${esc(h.description)}</div>` : ""}
-      <div class="meta">Code ${esc(h.code)} · ${esc(h.title || "")}</div>`;
+      <div class="meta">Código ${esc(h.code)} · ${esc(h.title || "")}</div>`;
   }
 
   // ------------------------------------------------------------------ timing
-  function schedule() {
-    clearTimeout(timer);
+  // Two independent clocks: the photo changes every `interval` seconds (cycling through
+  // the house's photos), and the house(s) on screen change every `houseInterval` seconds.
+  // The progress bar at the bottom shows the time left until the next house.
+  const fmtSecs = (s) => s < 60 ? `${s} s` : `${Math.floor(s / 60)} min${s % 60 ? ` ${s % 60} s` : ""}`;
+
+  function schedulePhoto() {
+    clearTimeout(photoTimer);
+    if (!playing || !list.length) return;
+    photoTimer = setTimeout(() => stepPhoto(1), settings.interval * 1000);
+  }
+  function schedule() {  // restart both clocks
+    clearTimeout(houseTimer);
+    schedulePhoto();
     const bar = $("#progress");
     bar.style.transition = "none"; bar.style.width = "0";
     if (!playing || !list.length) return;
     void bar.offsetWidth;
-    bar.style.transition = `width ${settings.interval}s linear`;
+    bar.style.transition = `width ${settings.houseInterval}s linear`;
     bar.style.width = "100%";
-    timer = setTimeout(() => { next(); }, settings.interval * 1000);
+    houseTimer = setTimeout(() => jump(1), settings.houseInterval * 1000);
   }
 
-  function next() {
+  function stepPhoto(dir) {
     if (!list.length) return;
-    step++;
-    if (step >= stepsForGroup()) { step = 0; group = (group + perSlide()) % list.length; }
-    render(); schedule();
-  }
-  function prev() {
-    if (!list.length) return;
-    if (step > 0) step--;
-    else { group = (group - perSlide() + list.length * 10) % list.length; step = Math.max(0, stepsForGroup() - 1); }
-    render(); schedule();
+    const n = stepsForGroup();
+    step = (step + dir + n) % n;
+    render(); schedulePhoto();
   }
   function jump(dir) {
     if (!list.length) return;
@@ -427,7 +457,7 @@
   function togglePlay(force) {
     playing = typeof force === "boolean" ? force : !playing;
     document.body.classList.toggle("is-paused", !playing);
-    $("#playBtn").textContent = playing ? "Pause" : "Play";
+    $("#playBtn").textContent = playing ? "Pausar" : "Reproduzir";
     schedule();
   }
 
@@ -437,8 +467,11 @@
     document.querySelectorAll("#purpose button").forEach((b) => b.classList.toggle("on", b.dataset.v === settings.purpose));
     $("#interval").value = settings.interval;
     $("#intervalOut").textContent = settings.interval + " s";
+    $("#houseInterval").value = settings.houseInterval;
+    $("#houseIntervalOut").textContent = fmtSecs(settings.houseInterval);
     $("#imgsPer").value = String(settings.imgsPer);
     $("#order").value = settings.order;
+    $("#fit").value = settings.fit;
     $("#showInfo").checked = settings.showInfo;
     $("#showFeat").checked = settings.showFeat;
     $("#showDesc").checked = settings.showDesc;
@@ -450,9 +483,11 @@
 
   $("#perSlide").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ perSlide: +v }); });
   $("#purpose").addEventListener("click", (e) => { const v = e.target.dataset?.v; if (v) set({ purpose: v }, true); });
-  $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedule(); });
+  $("#interval").addEventListener("input", (e) => { settings.interval = +e.target.value; $("#intervalOut").textContent = settings.interval + " s"; save(); schedulePhoto(); });
+  $("#houseInterval").addEventListener("input", (e) => { settings.houseInterval = +e.target.value; $("#houseIntervalOut").textContent = fmtSecs(settings.houseInterval); save(); schedule(); });
   $("#imgsPer").addEventListener("change", (e) => { set({ imgsPer: +e.target.value }); });
   $("#order").addEventListener("change", (e) => set({ order: e.target.value }, true));
+  $("#fit").addEventListener("change", (e) => set({ fit: e.target.value }));
   $("#showInfo").addEventListener("change", (e) => set({ showInfo: e.target.checked }));
   $("#showFeat").addEventListener("change", (e) => set({ showFeat: e.target.checked }));
   $("#showDesc").addEventListener("change", (e) => set({ showDesc: e.target.checked }));
@@ -473,12 +508,13 @@
     if (e.target.matches("input, select") && e.key !== "Escape") return;
     switch (e.key) {
       case " ": e.preventDefault(); togglePlay(); break;
-      case "ArrowRight": next(); break;
-      case "ArrowLeft": prev(); break;
+      case "ArrowRight": stepPhoto(1); break;
+      case "ArrowLeft": stepPhoto(-1); break;
       case "ArrowDown": case "PageDown": e.preventDefault(); jump(1); break;
       case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
       case "1": case "2": case "3": set({ perSlide: +e.key }); break;
       case "f": case "F": toggleFs(); break;
+      case "z": case "Z": set({ fit: FITS[(FITS.indexOf(settings.fit) + 1) % FITS.length] }); break;
       case "m": case "M": openMenu(); break;
       case "Escape": openMenu(false); break;
     }
@@ -494,7 +530,7 @@
   // ------------------------------------------------------------------ loading
   function readFile(file) {
     const fr = new FileReader();
-    fr.onload = () => { try { ingest(JSON.parse(fr.result)); openMenu(false); } catch (err) { $("#loaderMsg").textContent = "Invalid JSON: " + err.message; } };
+    fr.onload = () => { try { ingest(JSON.parse(fr.result)); openMenu(false); } catch (err) { $("#loaderMsg").textContent = "JSON inválido: " + err.message; } };
     fr.readAsText(file);
   }
   ["#fileIn", "#fileIn2"].forEach((s) => $(s).addEventListener("change", (e) => e.target.files[0] && readFile(e.target.files[0])));
@@ -508,9 +544,9 @@
     .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(ingest)
     .catch(() => {
-      $("#loaderMsg").innerHTML = `Couldn't load <code>${esc(DATA_URL)}</code> automatically` +
-        (location.protocol === "file:" ? " (browsers block this when the page is opened as a file)." : ".") +
-        `<br>Run <code>python -m http.server</code> in the project folder and open <code>/viewer/</code>, or pick the file below.`;
+      $("#loaderMsg").innerHTML = `Não foi possível carregar <code>${esc(DATA_URL)}</code> automaticamente` +
+        (location.protocol === "file:" ? " (o navegador bloqueia isso quando a página é aberta como arquivo)." : ".") +
+        `<br>Execute <code>python -m rmbh_scraper view</code> na pasta do projeto ou escolha o arquivo abaixo.`;
     });
 })();
 </script>
