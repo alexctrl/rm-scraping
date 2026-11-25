@@ -6,15 +6,16 @@
 <title>Apresentação RM Imóveis</title>
 <style>
   :root {
-    --bg: #0b0f14;
-    --panel: #121821;
-    --panel-2: #1a2230;
-    --text: #eef2f6;
-    --muted: #9aa7b6;
-    --line: #263142;
-    --rent: #22b8a7;      /* teal  — Aluguel */
-    --sale: #f0954a;      /* amber — Venda   */
-    --frame: 5px;
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --panel-2: #f2f4f7;
+    --panel-3: #e6eaf0;
+    --text: #18212c;
+    --muted: #5d6a7a;
+    --line: #dde3ea;
+    --rent: #0f9488;      /* teal  — Aluguel */
+    --sale: #e0731f;      /* amber — Venda   */
+    --shadow: 0 6px 24px rgba(16, 24, 40, .12);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
@@ -27,11 +28,11 @@
   #show[data-n="3"] { grid-template-columns: 1fr 1fr 1fr; }
 
   .slot { --accent: var(--sale); position: relative; min-width: 0; min-height: 0;
-    padding: var(--frame); background: var(--accent); container-type: size;
-    transition: background-color .6s ease; }
+    background: var(--bg); container-type: size; }
   .slot.rent { --accent: var(--rent); }
-  .stage { position: relative; width: 100%; height: 100%; overflow: hidden;
-    background: radial-gradient(ellipse at center, #161d27 0%, #07090c 100%); }
+  /* thin neutral divider between houses when 2 or 3 are on screen */
+  .slot + .slot { border-left: 1px solid var(--line); }
+  .stage { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
   .stage img { position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: contain; /* fit by width or height, never crop */
     opacity: 0; transition: opacity .7s ease; }
@@ -44,21 +45,21 @@
   #show.fit-cover  .stage img { object-fit: cover; }
 
   .badge { position: absolute; top: 14px; right: 14px; z-index: 3; display: flex; gap: 8px; align-items: center; }
-  .pill { background: var(--accent); color: #0b0f14; font-weight: 800; letter-spacing: .08em;
+  .pill { background: var(--accent); color: #fff; font-weight: 800; letter-spacing: .08em;
     font-size: clamp(11px, 1.6cqw, 15px); padding: .45em .9em; border-radius: 999px; text-transform: uppercase;
-    box-shadow: 0 4px 14px rgba(0,0,0,.35); }
-  .pill.ghost { background: rgba(10,14,20,.72); color: var(--text); font-weight: 600; letter-spacing: .02em;
-    text-transform: none; backdrop-filter: blur(6px); }
+    box-shadow: 0 4px 14px rgba(16,24,40,.22); }
+  .pill.ghost { background: rgba(255,255,255,.88); color: var(--text); font-weight: 600; letter-spacing: .02em;
+    text-transform: none; backdrop-filter: blur(6px); border: 1px solid var(--line); }
 
   .info { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
     padding: clamp(14px, 3cqw, 34px); padding-top: clamp(40px, 9cqh, 120px);
-    background: linear-gradient(to top, rgba(6,9,13,.94) 0%, rgba(6,9,13,.82) 45%, rgba(6,9,13,0) 100%);
+    background: linear-gradient(to top, rgba(255,255,255,.97) 0%, rgba(255,255,255,.9) 50%, rgba(255,255,255,0) 100%);
     max-height: 62%; overflow: hidden; }
   .info .type { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
     font-size: clamp(11px, 1.7cqw, 16px); }
   .info .price { font-size: clamp(22px, 5.2cqw, 58px); font-weight: 800; line-height: 1.05; margin: .12em 0 .1em; }
   .info .price small { font-size: .42em; font-weight: 600; color: var(--muted); margin-left: .3em; }
-  .info .loc { font-size: clamp(13px, 2.2cqw, 22px); color: #d9e1ea; margin-bottom: .6em; }
+  .info .loc { font-size: clamp(13px, 2.2cqw, 22px); color: #2b3644; margin-bottom: .6em; }
   .stats { display: flex; flex-wrap: wrap; gap: .5em 1.4em; font-size: clamp(12px, 2cqw, 19px); margin-bottom: .55em; }
   .stat { display: inline-flex; align-items: baseline; gap: .35em; white-space: nowrap; }
   .stat b { font-size: 1.15em; }
@@ -67,9 +68,9 @@
   .fees b { color: var(--text); font-weight: 600; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: .6em; max-height: 4.6em; overflow: hidden; }
   .chip { font-size: clamp(10px, 1.45cqw, 13px); padding: .28em .7em; border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-    background: color-mix(in srgb, var(--accent) 14%, transparent); color: #e7edf3; }
-  .desc { font-size: clamp(11px, 1.6cqw, 15px); color: #c4ceda; line-height: 1.45; white-space: pre-line;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, white); color: var(--text); }
+  .desc { font-size: clamp(11px, 1.6cqw, 15px); color: #3a4655; line-height: 1.45; white-space: pre-line;
     display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
   .meta { margin-top: .6em; font-size: clamp(10px, 1.3cqw, 12px); color: var(--muted); }
   .hide-desc .desc, .hide-feat .chips, .hide-info .info { display: none; }
@@ -88,23 +89,24 @@
   #progress { position: fixed; left: 0; bottom: 0; height: 3px; width: 0; z-index: 20;
     background: linear-gradient(90deg, var(--rent), var(--sale)); }
   #paused { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
-    background: rgba(10,14,20,.8); padding: 6px 14px; border-radius: 999px; font-size: 13px; display: none; }
+    background: rgba(255,255,255,.95); color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow);
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; display: none; }
   body.is-paused #paused { display: block; }
 
   /* ---------- menu ---------- */
   #menuBtn { position: fixed; top: 16px; left: 16px; z-index: 55; width: 46px; height: 46px; border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.14); background: rgba(10,14,20,.72); color: var(--text); cursor: pointer;
-    display: grid; place-items: center; backdrop-filter: blur(8px); transition: opacity .4s ease; }
-  #menuBtn:hover { background: rgba(30,40,55,.9); }
+    border: 1px solid var(--line); background: rgba(255,255,255,.9); color: var(--text); cursor: pointer;
+    display: grid; place-items: center; backdrop-filter: blur(8px); box-shadow: var(--shadow); transition: opacity .4s ease; }
+  #menuBtn:hover { background: var(--panel-2); }
   body.idle #menuBtn { opacity: 0; }
   body.menu-open #menuBtn { background: var(--panel-2); opacity: 1; }
   body.idle { cursor: none; }
 
   #menu { position: fixed; top: 0; left: 0; bottom: 0; width: min(360px, 92vw); z-index: 50;
-    background: var(--panel); border-right: 1px solid var(--line); box-shadow: 10px 0 40px rgba(0,0,0,.5);
+    background: var(--panel); border-right: 1px solid var(--line); box-shadow: 10px 0 40px rgba(16,24,40,.18);
     transform: translateX(-105%); transition: transform .3s ease; overflow-y: auto; padding: 22px 22px 30px; }
   body.menu-open #menu { transform: none; }
-  #scrim { position: fixed; inset: 0; z-index: 45; background: rgba(0,0,0,.45); display: none; }
+  #scrim { position: fixed; inset: 0; z-index: 45; background: rgba(16,24,40,.25); display: none; }
   body.menu-open #scrim { display: block; }
   #menu h2 { margin: 2px 0 4px 56px; font-size: 18px; }
   #menu .sub { margin: 0 0 18px 56px; color: var(--muted); font-size: 13px; }
@@ -115,7 +117,7 @@
     border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { border: 0; background: transparent; color: var(--text); padding: 9px 4px; border-radius: 7px;
     cursor: pointer; font: inherit; font-size: 14px; }
-  .seg button.on { background: #2b3647; font-weight: 700; }
+  .seg button.on { background: #fff; font-weight: 700; box-shadow: 0 1px 4px rgba(16,24,40,.14); }
   .range { display: flex; gap: 12px; align-items: center; }
   .range input { flex: 1; accent-color: var(--sale); }
   .range output { min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -128,7 +130,7 @@
   .row { display: flex; gap: 8px; }
   .btn { flex: 1; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); border-radius: 10px;
     padding: 10px; font: inherit; font-size: 14px; cursor: pointer; }
-  .btn:hover { background: #222c3c; }
+  .btn:hover { background: var(--panel-3); }
   .keys { font-size: 12px; color: var(--muted); line-height: 1.8; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
   kbd { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: 11px; color: var(--text); }
   #count { font-size: 13px; color: var(--muted); margin-top: -8px; margin-bottom: 18px; }
@@ -237,8 +239,8 @@
   </div>
 
   <div class="keys">
-    <kbd>Espaço</kbd> reproduzir / pausar &nbsp; <kbd>→</kbd> próxima foto &nbsp; <kbd>←</kbd> foto anterior<br>
-    <kbd>↓</kbd> próximo(s) imóvel(is) &nbsp; <kbd>↑</kbd> imóvel(is) anterior(es)<br>
+    <kbd>Espaço</kbd> reproduzir / pausar<br>
+    <kbd>→</kbd> próximo(s) imóvel(is) &nbsp; <kbd>←</kbd> imóvel(is) anterior(es)<br>
     <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> imóveis por tela &nbsp; <kbd>F</kbd> tela cheia &nbsp; <kbd>Z</kbd> ajuste da imagem &nbsp; <kbd>M</kbd> menu
   </div>
 </aside>
@@ -508,10 +510,9 @@
     if (e.target.matches("input, select") && e.key !== "Escape") return;
     switch (e.key) {
       case " ": e.preventDefault(); togglePlay(); break;
-      case "ArrowRight": stepPhoto(1); break;
-      case "ArrowLeft": stepPhoto(-1); break;
-      case "ArrowDown": case "PageDown": e.preventDefault(); jump(1); break;
-      case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
+      // arrows move between houses; photos only advance on their own timer
+      case "ArrowRight": case "ArrowDown": case "PageDown": e.preventDefault(); jump(1); break;
+      case "ArrowLeft": case "ArrowUp": case "PageUp": e.preventDefault(); jump(-1); break;
       case "1": case "2": case "3": set({ perSlide: +e.key }); break;
       case "f": case "F": toggleFs(); break;
       case "z": case "Z": set({ fit: FITS[(FITS.indexOf(settings.fit) + 1) % FITS.length] }); break;

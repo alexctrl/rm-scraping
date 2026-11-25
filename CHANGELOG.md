@@ -1,32 +1,40 @@
 # Changelog
 
-## Version 1 (1.0.0) — 2026-11-25
+Versions are created automatically by `.github/workflows/release.yml` on every push
+(rules in `tools/next_version.py`). This file summarises what each one contains.
 
-First working release.
+## Next release
+
+### Slideshow
+- White background throughout: the photo area, the details panel, the settings menu and the loader.
+- Removed the coloured frame around each house. The ALUGUEL/VENDA tag in the top-right
+  corner is now the only rent/sale marker.
+- `←` / `→` now skip to the previous or next house(s), like `↑` / `↓`. No key steps through
+  photos any more; they change on the "Tempo entre fotos" timer.
+
+## v1.2.0 — 2026-11-24
+- One-click Windows installer (`instalar.bat`). It downloads the latest release, installs Python
+  if needed, creates the virtual environment, adds launchers and can schedule the daily crawl.
+
+## v1.1.0 — 2026-11-24
+- Separate timers: "Tempo entre fotos" (photo changes) and "Tempo entre imóveis" (house changes).
+
+## v1.0.0 — 2026-11-24
+First release: the working scraper and slideshow.
 
 ### Scraper
-- Fetches everything with `requests` only. There is no JSON API, so the site's HTML is
-  parsed (see `docs/SITE_STUDY.md`).
-- Crawls every listing for rent and sale. It runs one search per (purpose, property type),
-  plus the broad search, and removes duplicates by code and purpose.
-- Fetches each listing's detail page: type, price, condo fee, IPTU, area, bedrooms, suites,
-  bathrooms, parking, neighbourhood, city, amenities, description and every photo URL.
-- Updates `data/listings.json` incrementally:
-  - `first_seen`, `last_seen`, `updated_at` and `removed_at`
-  - status: `active`, `unlisted` or `removed`
-  - price history
-  - a change report per run in `data/runs/`
-- Optionally downloads photos to `data/images/`, fetching only the ones not already on disk.
-- Safety check: refuses to mark listings as removed when a run finds less than half of the
-  previous listings.
-- A crawl limited with `--purpose` only touches listings of that purpose.
-- CLI commands: `crawl`, `view`, `get`, `search`, `types`, `neighborhoods`.
-- Selenium network-study tool in `tools/network_study.py`.
+- Fetches everything with `requests` only. There is no JSON API, so the site's HTML is parsed
+  (see `docs/SITE_STUDY.md`).
+- Crawls every listing for rent and sale, with all details and photo URLs, into
+  `data/listings.json`.
+- Daily incremental updates: first and last seen, active/unlisted/removed status, price
+  history, and a change report per run.
+- Optional photo download (only new files), a safety check against mass removals, and
+  `--purpose`-limited crawls.
+- CLI commands: `crawl`, `view`, `get`, `search`, `types`, `neighborhoods`. The interface is
+  in Brazilian Portuguese.
 
-### Slideshow viewer
-- `viewer/index.html` shows 1, 2 or 3 houses at a time. Photos are fitted to the screen and
-  never cropped.
-- Settings menu: time between slides, houses at a time, photos per house, rent/sale filter,
-  order, and which parts of the overlay to show.
-- Opens automatically after a crawl run from a terminal. Runs without a terminal (cron)
-  skip it.
+### Slideshow
+- 1, 2 or 3 houses per screen, photo timer, photos per house, image fit options, filters,
+  order, and toggles for the overlay.
+- Opens automatically after an interactive crawl.
