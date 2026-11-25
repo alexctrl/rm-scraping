@@ -155,13 +155,15 @@ back to the CDN URL if a local file is missing.
   as the slot, and *Ajustar à altura* exactly as tall. Either may crop or leave bars on the other
   axis, centred. *Preencher o quadro* zooms until the photo's smaller side fills the slot, so there
   are no bars and the edges are cropped.
-- **Colours**: each house has a coloured frame and badge, teal for **rent (Aluguel)** and orange
-  for **sale (Venda)**.
+- **Look**: white background. The tag in each house's top-right corner shows *Aluguel* in teal
+  or *Venda* in orange. The house code is in the top-left corner, the same size as the price.
+  Photos change on their own; there is no key for stepping through them.
 - **Details shown**: type, price (rent shown as "/ month"), neighbourhood and city, bedrooms,
   suites, bathrooms, parking, area ("~" means taken from the description), condo fee, IPTU,
   amenities, description, code, original title and photo counter. Fields the site doesn't
   provide are left out.
-- **Keys**: `Space` play/pause, `←`/`→` previous/next photo of the same house(s), `↑`/`↓` previous/next house(s),
+- **Keys**: `Space` play/pause, `←`/`→` previous/next house(s) (`↑`/`↓` and `PageUp`/`PageDown`,
+  as sent by presentation clickers, do the same),
   `1` `2` `3` houses at a time, `Z` cycle image fit, `F` fullscreen.
 - Optional URL parameters: `?data=path/to/listings.json&images=path/to/data/`.
 
